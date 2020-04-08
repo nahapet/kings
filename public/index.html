@@ -1,20 +1,19 @@
+<!-- Copyright 2020 Zaven Nahapetyan -->
 <!doctype html>
 <html>
 <head>
 <title>King's Cup by Zaven</title>
-<style>
-body {
-  padding: 0;
-  margin: 0;
-  position: fixed;
-  overflow: hidden;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-</style>
+<link rel="stylesheet" type="text/css" href="main.css">
 </head>
 <body>
+<div id="overlay">
+  <div>
+    <h1>King's Cup by Zaven</h1>
+    <input id="name" placeholder="Enter your name, silly goose."></input>
+    <span id="enter">Let's Get Lit!</span>
+  </div>
+</div>
+<div id="players"></div>
 <canvas id="canvas" style="width: 100%; height: 100%;"></canvas>
 <script src="/socket.io/socket.io.js"></script>
 <script src="card.js"></script>
@@ -22,7 +21,5 @@ body {
 <script src="mouse_handler.js"></script>
 <script src="ui_controller.js"></script>
 <script>new UIController().begin();</script>
-<div>
-</div>
 </body>
 </html>

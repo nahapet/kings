@@ -9,6 +9,7 @@
   },
   "scripts": {
     "deploy": "npm run minify && gcloud app deploy",
+    "play": "npm run minify && npm start",
     "start": "node app.js",
     "minify": "minify js/* -d public",
     "lint": "eslint .",

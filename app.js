@@ -6,8 +6,9 @@ const io = require('socket.io')(server);
 const Card = require('./public/card.js');
 
 class Controller {
-  constructor(io) {
-    this.io = io;
+  constructor() {
+    this.players = [];
+    this.currentPlayerIndex = 0;
     this.cards = [];
     this.cardsMap = {};
     this.rankSuiteMap = {};
@@ -15,7 +16,9 @@ class Controller {
   }
 
   initIO() {
-    this.io.on('connection', (socket) => {
+    io.on('connection', (socket) => {
+      let playerName = null;
+
       if (this.numConnections > 0) {
         this.numConnections += 1;
       } else {
@@ -26,6 +29,18 @@ class Controller {
 
       socket.on('disconnect', () => {
         this.numConnections -= 1;
+        const nameIndex = this.players.indexOf(playerName);
+        if (nameIndex >= 0) {
+          this.players.splice(nameIndex, 1);
+        }
+        this.emitPlayers();
+      });
+
+      socket.on('name', (name) => {
+        playerName = this.sanitizeName(name);
+        this.players.push(playerName);
+        socket.emit('register name', playerName);
+        this.emitPlayers();
       });
 
       socket.on('card move', (data) => {
@@ -38,7 +53,7 @@ class Controller {
           this.cards.splice(index, 1);
           this.cards.push(grabbedCard);
         }
-        io.emit('card data', this.cards);
+        this.emitCards();
       });
 
       socket.on('card release', (data) => {
@@ -47,11 +62,45 @@ class Controller {
           const rankAndSuite = this.rankSuiteMap[data.id];
           grabbedCard.rank = rankAndSuite.rank;
           grabbedCard.suite = rankAndSuite.suite;
+          this.nextTurn();
+          this.emitPlayers();
         }
         grabbedCard.freed = false;
-        io.emit('card data', this.cards);
+        this.emitCards();
       });
     });
+  }
+
+  emitCards() {
+    io.emit('card data', this.cards);
+  }
+
+  emitPlayers() {
+    if (this.players.length === 0) {
+      return;
+    }
+    this.currentPlayerIndex = this.currentPlayerIndex % this.players.length;
+    io.emit(
+      'players',
+      {
+        currentPlayerIndex: this.currentPlayerIndex,
+        players: this.players
+      }
+    );
+  }
+
+  nextTurn() {
+    this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
+  }
+
+  sanitizeName(name) {
+    if (typeof name !== 'string' || name == '') {
+      name = 'Silly Goose';
+    }
+    if (this.players.indexOf(name) === -1) {
+      return name;
+    }
+    return this.sanitizeName(name + ' 2');
   }
 
   resetAndMakeCards() {
@@ -89,7 +138,7 @@ class Controller {
 }
 
 app.use(express.static('public'));
-const controller = new Controller(io);
+const controller = new Controller();
 controller.initIO();
 if (module === require.main) {
   const PORT = process.env.PORT || 8080;
