@@ -1,0 +1,37 @@
+{
+  "name": "zav-kings",
+  "description": "Game of Kings Cup",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Zaven Nahapetyan",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "deploy": "npm run minify && gcloud app deploy",
+    "start": "node app.js",
+    "minify": "minify js/* -d public",
+    "lint": "eslint .",
+    "fix": "eslint --fix ."
+  },
+  "dependencies": {
+    "express": "^4.15.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "babel-minify": "^0.5.1",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^2.5.1"
+  },
+  "cloud-repo-tools": {
+    "requiresKeyFile": true,
+    "requiresProjectId": true
+  }
+}
