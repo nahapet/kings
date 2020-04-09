@@ -1,10 +1,12 @@
 // Copyright 2020, Zaven Nahapetyan
 
 class MouseHandler {
-  constructor(controller, graphics) {
+  constructor(controller, graphics, slider) {
     this.controller = controller;
     this.graphics = graphics;
+    this.slider = slider;
     this.isDraggingScreen;
+    this.isZooming = false;
     this.dragX = null;
     this.dragY = null;
     this.initListeners();
@@ -13,13 +15,21 @@ class MouseHandler {
   initListeners() {
     document.addEventListener('mousedown', this.mousedown.bind(this));
     document.addEventListener('touchstart', this.mousedown.bind(this));
-    document.addEventListener('mouseup', this.mouseup.bind(this));
-    document.addEventListener('touchend', this.mouseup.bind(this));
     document.addEventListener('mousemove', this.mousemove.bind(this));
     document.addEventListener('touchmove', this.mousemove.bind(this));
+    document.addEventListener('mouseup', this.mouseup.bind(this));
+    document.addEventListener('touchend', this.mouseup.bind(this));
+
     const enterNameButton = document.getElementById("enter");
     enterNameButton.addEventListener("click", this.enterName.bind(this));
     document.addEventListener('keyup', this.enterNameKey.bind(this));
+
+    this.slider.addEventListener("mousedown", this.zoomStart.bind(this));
+    this.slider.addEventListener("touchstart", this.zoomStart.bind(this));
+    this.slider.addEventListener("mousemove", this.zoom.bind(this));
+    this.slider.addEventListener("touchmove", this.zoom.bind(this));
+    this.slider.addEventListener("mouseup", this.zoomEnd.bind(this));
+    this.slider.addEventListener("touchend", this.zoomEnd.bind(this));
   }
 
   mousedown(event) {
@@ -101,6 +111,23 @@ class MouseHandler {
       return;
     }
     this.enterName(event);
+  }
+
+  zoomStart(event) {
+    event.stopPropagation();
+    this.isZooming = true;
+  }
+
+  zoom(event) {
+    if (!this.isZooming) {
+      return;
+    }
+    event.stopPropagation();
+    this.controller.setZoom(event.toElement.value);
+  }
+
+  zoomEnd(event) {
+    this.isZooming = false
   }
 }
 

@@ -5,6 +5,7 @@ class UIController {
     this.name = null;
     this.socket = io();
     this.canvas = document.getElementById('canvas');
+    this.slider = document.getElementById("slider");
     this.graphicsContext = canvas.getContext('2d');
     this.cards = [];
     this.grabbedCardID = null;
@@ -13,19 +14,17 @@ class UIController {
   }
 
   begin() {
-    const graphics = new Graphics(this, this.canvas, this.graphicsContext);
-    new MouseHandler(this, graphics);
+    this.graphics = new Graphics(this, this.canvas, this.graphicsContext);
+    new MouseHandler(this, this.graphics, this.slider);
     this.socket.on('card data', this.updateCardsFromScocket.bind(this));
     this.socket.on('register name', this.updateName.bind(this));
     this.socket.on('players', this.updatePlayers.bind(this));
   }
 
   updateName(name) {
-    const overlay = document.getElementById('overlay');
-    overlay.parentNode.removeChild(overlay);
     this.name = name;
-    const playerContainer = document.getElementById('players');
-    playerContainer.style = "display: flex";
+    const body = document.getElementsByTagName("body")[0];
+    body.className = 'playing';
   }
 
   updatePlayers(data) {
@@ -101,6 +100,16 @@ class UIController {
       return;
     }
     this.socket.emit('card move', { id: this.grabbedCardID, x, y});
+  }
+
+  setZoom(value) {
+    const scale = Math.pow(10, value / 100);
+    this.graphics.setUserScale(scale);
+  }
+
+  updateSlider(scale) {
+    const value = Math.log10(scale) * 100;
+    this.slider.value = value;
   }
 }
 

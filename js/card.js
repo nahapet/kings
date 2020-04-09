@@ -2,11 +2,11 @@
 
 class Card {
   static get WIDTH() {
-    return 145;
+    return 150;
   }
 
   static get HEIGHT() {
-    return 200;
+    return 210;
   }
 
   static get SUITES() {
