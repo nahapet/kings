@@ -47,11 +47,9 @@ class Controller {
         const grabbedCard = this.cardsMap[data.id];
         grabbedCard.x += data.x;
         grabbedCard.y += data.y;
-        if (grabbedCard.doesNotTouchAnyCards(this.cards)) {
+        if (this.doesNotTouchAnyCards(grabbedCard)) {
           grabbedCard.freed = true;
-          const index = this.cards.indexOf(grabbedCard);
-          this.cards.splice(index, 1);
-          this.cards.push(grabbedCard);
+          this.moveCardToTop(grabbedCard);
         }
         this.emitCards();
       });
@@ -62,6 +60,7 @@ class Controller {
           const rankAndSuite = this.rankSuiteMap[data.id];
           grabbedCard.rank = rankAndSuite.rank;
           grabbedCard.suite = rankAndSuite.suite;
+          this.moveCardDown(grabbedCard);
           this.nextTurn();
           this.emitPlayers();
         }
@@ -101,6 +100,49 @@ class Controller {
       return name;
     }
     return this.sanitizeName(name + ' 2');
+  }
+
+  moveCardToTop(card) {
+    const index = this.cards.indexOf(card);
+    this.cards.splice(index, 1);
+    this.cards.push(card);
+  }
+
+  moveCardDown(card) {
+    const e = card.getEdges();
+    const index = this.cards.indexOf(card);
+    let otherCardIndex = this.cards.length - 1;
+    for (; otherCardIndex >= 0; otherCardIndex--) {
+      const otherCard = this.cards[otherCardIndex];
+      if (card.id === otherCard.id) {
+        continue;
+      }
+      if (otherCard.intersects(e.p1x, e.p1y)
+        || otherCard.intersects(e.p2x, e.p2y)
+        || otherCard.intersects(e.p3x, e.p3y)
+        || otherCard.intersects(e.p4x, e.p4y)) {
+        break;
+      }
+    }
+    this.cards.splice(index, 1);
+    this.cards.splice(otherCardIndex + 1, 0, card);
+  }
+
+  doesNotTouchAnyCards(card) {
+    const e = card.getEdges();
+    for (let i = this.cards.length - 1; i >= 0; i--) {
+      const otherCard = this.cards[i];
+      if (card.id === otherCard.id) {
+        return true;
+      }
+      if (otherCard.intersects(e.p1x, e.p1y)
+        || otherCard.intersects(e.p2x, e.p2y)
+        || otherCard.intersects(e.p3x, e.p3y)
+        || otherCard.intersects(e.p4x, e.p4y)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   resetAndMakeCards() {

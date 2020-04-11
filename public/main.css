@@ -1,3 +1,4 @@
+/* Copyright 2020 Zaven Nahapetyan */
 body {
   padding: 0;
   margin: 0;
@@ -6,23 +7,28 @@ body {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
-  font-family: "Arial", "Helvetica", sans-serif;
+  font-family: "Raleway", sans-serif;
+  color: #545454;
+  font-weight: 100;
 }
 
-body.playing #overlay {
-  display: none;
-}
-
-body.playing #players {
+div {
   display: flex;
 }
 
-body.playing #slider {
+.playing #overlay {
+  display: none;
+}
+
+.playing #players {
+  display: flex;
+}
+
+.playing #slider {
   display: flex;
 }
 
 #overlay {
-  display: flex;
   position: fixed;
   background: #000000bd;
   width: 100%;
@@ -32,11 +38,10 @@ body.playing #slider {
 }
 
 #overlay > div {
-  display: flex;
   overflow: hidden;
+  min-width: 400px;
   flex-direction: column;
   justify-content: center;
-  padding-top: 40px;
   background: #ffffff;
   border-radius: 25px;
   box-shadow:
@@ -44,35 +49,99 @@ body.playing #slider {
     0 6px 20px 0 rgba(117, 34, 34, 0.73);
 }
 
+#header {
+  flex-direction: column;
+  background: #c72f2f;
+  color: white;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #4c2626;
+}
+
+h1 {
+  font-family: "Permanent Marker", sans-serif;
+  font-size: 32pt;
+  text-align: center;
+  font-weight: 100;
+  margin: 0;
+  padding: 20px;
+  padding-bottom: 0;
+}
+
+h2 {
+  font-size: large;
+  text-align: center;
+  font-weight: 100;
+  margin: 0;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+
 #enter {
-  display: flex;
-  height: 60px;
-  background: #ad6668;
-  border-top: 1px solid #545454;
+  border-top: 1px solid #4c2626;
   color: white;
   font-size: x-large;
   align-items: center;
   justify-content: center
 }
 
-h1, #name {
-  margin-top: 0;
-  margin-left: 40px;
-  margin-right: 40px;
-  margin-bottom: 30px;
+#enter > span {
+  width: 50%;
+  padding: 20px;
+  flex-grow: 1;
+  background: #e67777;
+  text-align: center;
+}
+
+#enter > span:nth-child(2) {
+  background: #c72f2f;
+  border-left: 1px solid #4c2626;
+}
+
+.join #enter > span:nth-child(2) {
+  display: none;
+}
+
+#input {
+  margin: 0 40px 40px 40px;
+  flex-direction: column;
+}
+
+#input span {
+  font-size: large;
+  padding: 20px;
+  padding-left: 0;
+}
+
+#input input {
+  flex-grow: 1;
+  color: #c72f2f;
+  font-size: large;
+  border: none;
+  border-bottom: 1px dashed #dedede;
+  padding: 10px;
   font-weight: 100;
 }
 
-h1 {
-  color: #545454;
-  font-size: xx-large;
+#input input::placeholder {
+  color: #bfbfbf;
 }
 
-#name {
-  color: #ad6668;
-  font-size: x-large;
-  border: 1px solid #ad6668;
-  padding: 10px;
+#input > div:nth-child(2) {
+  padding-top: 5px;
+}
+
+.join #input > div:nth-child(2) {
+  display: none;
+}
+
+#code {
+  text-transform: uppercase;
+}
+
+#code::placeholder {
+  text-transform: none;
 }
 
 #players {
@@ -89,7 +158,6 @@ h1 {
 }
 
 #players > div {
-  display: flex;
   flex-direction: column;
   overflow: hidden;
   justify-content: center;

@@ -3,15 +3,29 @@
 <html>
 <head>
 <title>King's Cup by Zaven</title>
+<link href='http://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="main.css">
 </head>
 <body>
 <div id="overlay">
-  <div>
-    <h1>King's Cup by Zaven</h1>
-    <input id="name" placeholder="Enter your name, silly goose."></input>
-    <span id="enter">Let's Get Lit!</span>
+<div>
+  <div id="header">
+    <h1>King's Cup Online</h1>
+    <h2>A multi-player online game of King's Cup with friends!</h2>
   </div>
+  <div id="input">
+    <div>
+      <span>Your Name:</span>
+      <input id="name" placeholder="E.g. Silly Goose"></input>
+    </div>
+    <div>
+      <span>Game ID (Optional):</span>
+      <input id="code" placeholder="Game to join"></input>
+    </div>
+  </div>
+  <div id="enter"><span>New Game</span><span>Join Game</span></div>
+</div>
 </div>
 <div id="players"></div>
 <input type="range" min="-70" max="20" value="0" id="slider"></input>

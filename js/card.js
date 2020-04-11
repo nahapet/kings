@@ -66,23 +66,6 @@ class Card {
       && s1 * tapY > s1 * l3(tapX) && s2 * tapY > s2 * l4(tapX);
   }
 
-  doesNotTouchAnyCards(cards) {
-    const e = this.getEdges();
-    for (let i = cards.length - 1; i >= 0; i--) {
-      const card = cards[i];
-      if (this.id === card.id) {
-        return true;
-      }
-      if (card.intersects(e.p1x, e.p1y)
-        || card.intersects(e.p2x, e.p2y)
-        || card.intersects(e.p3x, e.p3y)
-        || card.intersects(e.p4x, e.p4y)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   distanceFromCenter() {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
