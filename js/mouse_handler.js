@@ -21,8 +21,10 @@ class MouseHandler {
     document.addEventListener('touchend', this.mouseup.bind(this));
 
     const enterNameButton = document.getElementById("enter");
-    enterNameButton.addEventListener("click", this.enterName.bind(this));
-    document.addEventListener('keyup', this.enterNameKey.bind(this));
+    enterNameButton.addEventListener("click", this.enterGame.bind(this));
+    document.addEventListener('keyup', this.enterGameKey.bind(this));
+    const joinGameButton = document.getElementById("join");
+    joinGameButton.addEventListener("click", this.joinGame.bind(this));
 
     this.slider.addEventListener("mousedown", this.zoomStart.bind(this));
     this.slider.addEventListener("touchstart", this.zoomStart.bind(this));
@@ -101,16 +103,25 @@ class MouseHandler {
     this.isDraggingScreen = false;
   }
 
-  enterName(event) {
+  enterGame(event, verifyGameID) {
+    if (!verifyGameID) {
+      verifyGameID = false;
+    }
     const name = document.getElementById("name").value;
-    this.controller.submitName(name);
+    const gameID = document.getElementById("code").value;
+    this.controller.submitName(name, gameID, verifyGameID);
   }
 
-  enterNameKey(event) {
+  enterGameKey(event) {
     if (event.keyCode !== 13) {
       return;
     }
-    this.enterName(event);
+    this.enterGame(event, false);
+  }
+
+  joinGame(event) {
+    event.stopPropagation();
+    this.enterGame(event, true);
   }
 
   zoomStart(event) {

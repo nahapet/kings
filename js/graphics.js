@@ -27,11 +27,6 @@ class Graphics {
 
     Card.RANKS.forEach(rank => {
       this.cardFaceImages[rank] = {};
-      Card.SUITES.forEach(suite => {
-        const image = new Image();;
-        this.cardFaceImages[rank][suite] = image;
-        image.src = `images/cards/${rank}${suite}.png`;
-      });
     });
   }
 
@@ -75,7 +70,7 @@ class Graphics {
     ctx.translate(this.translateX, this.translateY);
     ctx.translate(this.dragX, this.dragY);
     ctx.scale(this.scale, this.scale);
-    const logoSize = 420;
+    const logoSize = 360;
     ctx.drawImage(this.logoImage, -logoSize / 2, -logoSize / 2, logoSize, logoSize);
   }
 
@@ -96,8 +91,25 @@ class Graphics {
   drawCards() {
     const cards = this.controller.getCards();
     for (const i in cards) {
-      cards[i].draw(this.ctx, this.cardBackImage, this.cardFaceImages);
+      const card = cards[i];
+      const {rank, suite} = card.getRankAndSuit();
+      if (rank == null || suite == null) {
+        card.draw(this.ctx, this.cardBackImage);
+      } else {
+        const image = this.downloadCardImage(rank, suite);
+        card.draw(this.ctx, image);
+      }
     }
+  }
+
+  downloadCardImage(rank, suite) {
+    let image = this.cardFaceImages[rank][suite];
+    if (image == null) {
+      image = new Image();
+      this.cardFaceImages[rank][suite] = image;
+      image.src = `images/cards/${rank}${suite}.png`;
+    }
+    return image;
   }
 
   convertRealToVirtualX(x) {

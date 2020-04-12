@@ -128,12 +128,22 @@ h2 {
   color: #bfbfbf;
 }
 
-#input > div:nth-child(2) {
+#input > div:nth-child(3) {
   padding-top: 5px;
 }
 
-.join #input > div:nth-child(2) {
+.join #input > div:nth-child(3) {
   display: none;
+}
+
+#error {
+  display: none;
+  color: #c72f2f;
+  justify-content: center;
+}
+
+.error #error {
+  display: flex;
 }
 
 #code {

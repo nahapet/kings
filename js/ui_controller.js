@@ -19,6 +19,8 @@ class UIController {
     this.socket.on('card data', this.updateCardsFromScocket.bind(this));
     this.socket.on('register name', this.updateName.bind(this));
     this.socket.on('players', this.updatePlayers.bind(this));
+    this.socket.on('game ID error', this.showError.bind(this));
+    this.socket.on('card download', this.downloadCardImage.bind(this));
   }
 
   updateName(name) {
@@ -57,8 +59,8 @@ class UIController {
     return this.players.indexOf(this.name) === this.currentPlayerIndex;
   }
 
-  submitName(name) {
-    this.socket.emit('name', name);
+  submitName(name, gameID, verifyGameID) {
+    this.socket.emit('enter', {name, gameID, verifyGameID});
   }
 
   updateCardsFromScocket(cardData) {
@@ -74,6 +76,11 @@ class UIController {
         card.suite
       ));
     });
+  }
+
+  showError() {
+    const body = document.getElementsByTagName("body")[0];
+    body.className = 'error';
   }
 
   getCards() {
@@ -100,6 +107,11 @@ class UIController {
       return;
     }
     this.socket.emit('card move', { id: this.grabbedCardID, x, y});
+  }
+
+  downloadCardImage(data) {
+    const {rank, suite} = data;
+    this.graphics.downloadCardImage(rank, suite);
   }
 
   setZoom(value) {

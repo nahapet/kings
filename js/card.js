@@ -30,6 +30,13 @@ class Card {
     this.suite = suite;
   }
 
+  getRankAndSuit() {
+    return {
+      rank: this.rank,
+      suite: this.suite,
+    };
+  }
+
   getEdges() {
     // Add tiny rotation otherwise the slope of vertical line is undefined.
     if (Number.isInteger(2 * this.rotation / Math.PI)) {
@@ -70,7 +77,7 @@ class Card {
     return Math.sqrt(this.x * this.x + this.y * this.y);
   }
 
-  draw(ctx, cardBackImage, cardFaceImages) {
+  draw(ctx, cardImage) {
     let width = Card.WIDTH;
     let height = Card.HEIGHT;
     if (this.freed) {
@@ -90,13 +97,7 @@ class Card {
     ctx.shadowOffsetY = 1;
     ctx.fillRect(0, 0, width, height);
 
-    if (this.rank == null || this.suite == null) {
-      ctx.drawImage(cardBackImage, 0, 0, width, height);
-    } else {
-      const image = cardFaceImages[this.rank][this.suite];
-      ctx.drawImage(image, 0, 0, width, height);
-    }
-
+    ctx.drawImage(cardImage, 0, 0, width, height);
     ctx.restore();
   }
 }

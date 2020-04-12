@@ -36,28 +36,39 @@ class Controller {
         this.emitPlayers();
       });
 
-      socket.on('name', (name) => {
+      socket.on('enter', (data) => {
+        const {name, gameID, verifyGameID} = data;
         playerName = this.sanitizeName(name);
-        this.players.push(playerName);
-        socket.emit('register name', playerName);
-        this.emitPlayers();
+        if (!verifyGameID && !gameID) {
+          this.makeNewGame(socket, playerName);
+          return;
+        }
+        const isValid = this.isGameIDValid(gameID);
+        if (isValid) {
+          this.addPlayerToGame(socket, playerName, gameID);
+          return;
+        }
+        this.emitError(socket);
       });
 
       socket.on('card move', (data) => {
-        const grabbedCard = this.cardsMap[data.id];
-        grabbedCard.x += data.x;
-        grabbedCard.y += data.y;
+        const {x, y, id} = data;
+        const grabbedCard = this.cardsMap[id];
+        grabbedCard.x += x;
+        grabbedCard.y += y;
         if (this.doesNotTouchAnyCards(grabbedCard)) {
           grabbedCard.freed = true;
           this.moveCardToTop(grabbedCard);
+          this.emitCardDownload(grabbedCard);
         }
         this.emitCards();
       });
 
       socket.on('card release', (data) => {
-        const grabbedCard = this.cardsMap[data.id];
+        const {id} = data;
+        const grabbedCard = this.cardsMap[id];
         if (grabbedCard.freed && grabbedCard.distanceFromCenter() > Card.HEIGHT * 2.5) {
-          const rankAndSuite = this.rankSuiteMap[data.id];
+          const rankAndSuite = this.rankSuiteMap[id];
           grabbedCard.rank = rankAndSuite.rank;
           grabbedCard.suite = rankAndSuite.suite;
           this.moveCardDown(grabbedCard);
@@ -70,8 +81,33 @@ class Controller {
     });
   }
 
+  makeNewGame(socket, playerName) {
+    this.players.push(playerName);
+    socket.emit('register name', playerName);
+    this.emitPlayers();
+  }
+
+  addPlayerToGame(socket, playerName) {
+    this.players.push(playerName);
+    socket.emit('register name', playerName);
+    this.emitPlayers();
+  }
+
+  isGameIDValid(gameID) {
+    return false;
+  }
+
+  emitError(socket) {
+    socket.emit('game ID error');
+  }
+
   emitCards() {
     io.emit('card data', this.cards);
+  }
+
+  emitCardDownload(card) {
+    const rankAndSuite = this.rankSuiteMap[card.id];
+    io.emit('card download', rankAndSuite);
   }
 
   emitPlayers() {
