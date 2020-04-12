@@ -99,12 +99,12 @@ h2 {
   border-left: 1px solid #4c2626;
 }
 
-.join #enter > span:nth-child(2) {
+.join #enter > span:first-child {
   display: none;
 }
 
 #input {
-  margin: 0 40px 40px 40px;
+  margin: 20px 40px 40px 40px;
   flex-direction: column;
 }
 

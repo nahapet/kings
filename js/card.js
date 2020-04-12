@@ -83,6 +83,13 @@ class Card {
     ctx.rotate(this.rotation);
     ctx.translate(-width / 2, -height / 2);
 
+    ctx.fillStyle = "rgba(0,0,0,0.01)";
+    ctx.shadowColor = "rgba(0,0,0,1)";
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    ctx.fillRect(0, 0, width, height);
+
     if (this.rank == null || this.suite == null) {
       ctx.drawImage(cardBackImage, 0, 0, width, height);
     } else {

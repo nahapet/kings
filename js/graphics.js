@@ -21,7 +21,9 @@ class Graphics {
     this.cardBackImage = new Image();
     this.cardBackImage.src = 'images/back.png';
     this.tableImage = new Image();
-    this.tableImage.src = 'images/wood.jpg';
+    this.tableImage.src = 'images/stone.jpg';
+    this.logoImage = new Image();
+    this.logoImage.src = 'images/logo.png';
 
     Card.RANKS.forEach(rank => {
       this.cardFaceImages[rank] = {};
@@ -66,22 +68,29 @@ class Graphics {
     this.canvas.width = width;
     this.canvas.height = height;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    const pattern = ctx.createPattern(this.tableImage, 'repeat');
-    if (pattern != null) {
-      const matrix = new DOMMatrix();
-      const transform = matrix
-        .translateSelf(this.dragX + width / 2, this.dragY + height / 2, 0)
-        .scaleSelf(2*this.scale, 2*this.scale, 1);
-      pattern.setTransform(transform);
-    }
-    ctx.fillStyle = pattern;
-    ctx.fillRect(0, 0, width, height);
+    this.drawBackground(width, height);
 
     this.translateX = width / 2;
     this.translateY = height / 2;
     ctx.translate(this.translateX, this.translateY);
     ctx.translate(this.dragX, this.dragY);
     ctx.scale(this.scale, this.scale);
+    const logoSize = 420;
+    ctx.drawImage(this.logoImage, -logoSize / 2, -logoSize / 2, logoSize, logoSize);
+  }
+
+  drawBackground(width, height) {
+    const ctx = this.ctx;
+    const pattern = ctx.createPattern(this.tableImage, 'repeat');
+    if (pattern != null) {
+      const matrix = new DOMMatrix();
+      const transform = matrix
+        .translateSelf(this.dragX + width / 2, this.dragY + height / 2, 0)
+        .scaleSelf(2 * this.scale, 2 * this.scale, 1);
+      pattern.setTransform(transform);
+    }
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, width, height);
   }
 
   drawCards() {
