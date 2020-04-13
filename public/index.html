@@ -2,10 +2,17 @@
 <!doctype html>
 <html>
 <head>
-<title>King's Cup by Zaven</title>
+<title>King's Cup Drinking Game Online</title>
 <link href='http://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="main.css">
+<meta name="description" content="Play the King's Cup drinking game online now! Perfect for team happy hours and virtual hang outs. Enjoy the modern spin on this classic drinking game with friends.">
+<meta name="keywords" content="Online Happy Hour, Drinking Game, King's Cup, King's Cup Online, Online Drinking Game, Zoom Drinking Game, Sociables">
+<meta name="author" content="Zaven Nahapetyan">
+<meta property="og:title" content="King's Cup Drinking Game Online">
+<meta property="og:image" content="https://kingscup.app/images/preview.png">
+<meta property="og:description" content="Play the King's Cup drinking game online now! Perfect for team happy hours and virtual hang outs. Enjoy the modern spin on this classic drinking game with friends.">
+<meta property="og:url" content="https://kingscup.app">
 </head>
 <body>
 <div id="overlay">
@@ -15,13 +22,13 @@
     <h2>A multi-player online game of King's Cup with friends!</h2>
   </div>
   <div id="input">
-    <span id="error">Error. Please enter a valid game ID.</span>
+    <span id="error">Error. Please enter a valid Game ID to join.</span>
     <div>
       <span>Your Name:</span>
       <input id="name" placeholder="E.g. Silly Goose"></input>
     </div>
     <div>
-      <span>Game ID (Optional):</span>
+      <span>Game to Join (Optional):</span>
       <input id="code" placeholder="Game to join"></input>
     </div>
   </div>
@@ -31,6 +38,7 @@
   </div>
 </div>
 </div>
+<span id="gameID"></span>
 <div id="players"></div>
 <input type="range" min="-70" max="20" value="0" id="slider"></input>
 <canvas id="canvas" style="width: 100%; height: 100%;"></canvas>

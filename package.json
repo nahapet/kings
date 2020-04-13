@@ -11,7 +11,7 @@
     "deploy": "npm run minify && gcloud app deploy",
     "play": "npm run minify && npm start",
     "start": "node app.js",
-    "minify": "minify js/* -d public",
+    "minify": "minify frontend_js/* -d public",
     "lint": "eslint .",
     "fix": "eslint --fix ."
   },
@@ -29,7 +29,8 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.19.0",
-    "eslint-plugin-react-hooks": "^2.5.1"
+    "eslint-plugin-react-hooks": "^2.5.1",
+    "serve-favicon": "^2.5.0"
   },
   "cloud-repo-tools": {
     "requiresKeyFile": true,

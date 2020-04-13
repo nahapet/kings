@@ -30,7 +30,11 @@ class Card {
     this.suite = suite;
   }
 
-  getRankAndSuit() {
+  getID() {
+    return this.id;
+  }
+
+  getRankAndSuite() {
     return {
       rank: this.rank,
       suite: this.suite,

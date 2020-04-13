@@ -17,16 +17,21 @@ class UIController {
     this.graphics = new Graphics(this, this.canvas, this.graphicsContext);
     new MouseHandler(this, this.graphics, this.slider);
     this.socket.on('card data', this.updateCardsFromScocket.bind(this));
+    this.socket.on('single card data', this.updateSingleCardFromScocket.bind(this));
     this.socket.on('register name', this.updateName.bind(this));
     this.socket.on('players', this.updatePlayers.bind(this));
     this.socket.on('game ID error', this.showError.bind(this));
     this.socket.on('card download', this.downloadCardImage.bind(this));
+    this.socket.on('rearrange cards', this.rearrangeCards.bind(this));
   }
 
-  updateName(name) {
-    this.name = name;
+  updateName(data) {
+    const {playerName, gameID} = data;
+    this.name = playerName;
     const body = document.getElementsByTagName("body")[0];
     body.className = 'playing';
+    const gameIDElement = document.getElementById('gameID');
+    gameIDElement.innerHTML = '<span>Game ID:</span>' + gameID;
   }
 
   updatePlayers(data) {
@@ -60,22 +65,48 @@ class UIController {
   }
 
   submitName(name, gameID, verifyGameID) {
+    gameID = gameID.toUpperCase();
+    if (this.hasName()) {
+      return;
+    }
     this.socket.emit('enter', {name, gameID, verifyGameID});
+  }
+
+  cloneCard(card) {
+    return new Card(
+      card.id,
+      card.rotation,
+      card.x,
+      card.y,
+      card.freed,
+      card.rank,
+      card.suite
+    );
   }
 
   updateCardsFromScocket(cardData) {
     this.cards = [];
     cardData.forEach((card) => {
-      this.cards.push(new Card(
-        card.id,
-        card.rotation,
-        card.x,
-        card.y,
-        card.freed,
-        card.rank,
-        card.suite
-      ));
+      const newCard = this.cloneCard(card);
+      this.cards.push(newCard);
     });
+  }
+
+  updateSingleCardFromScocket(data) {
+    const {id, card} = data;
+    for (let i in this.cards) {
+      const oldCard = this.cards[i];
+      if (oldCard.id == id) {
+        this.cards[i] = this.cloneCard(card);
+        return;
+      }
+    }
+  }
+
+  rearrangeCards(data) {
+    const {from, to} = data;
+    const card = this.cards.splice(from, 1)[0];
+    this.cards.splice(to, 0, card);
   }
 
   showError() {

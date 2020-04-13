@@ -154,6 +154,19 @@ h2 {
   text-transform: none;
 }
 
+#gameID {
+  color: #c72f2f;
+  font-size: x-large;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+#gameID span {
+  font-family: "Permanent Marker", sans-serif;
+  padding-right: 10px
+}
+
 #players {
   display: none;
   flex-direction: column;
@@ -163,6 +176,7 @@ h2 {
   right: 0;
   width: 30%;
   height: 100%;
+  padding-top: 60px;
   padding-left: 20px;
   padding-right: 20px;
 }

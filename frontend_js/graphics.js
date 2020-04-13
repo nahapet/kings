@@ -92,7 +92,7 @@ class Graphics {
     const cards = this.controller.getCards();
     for (const i in cards) {
       const card = cards[i];
-      const {rank, suite} = card.getRankAndSuit();
+      const {rank, suite} = card.getRankAndSuite();
       if (rank == null || suite == null) {
         card.draw(this.ctx, this.cardBackImage);
       } else {
