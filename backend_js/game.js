@@ -49,10 +49,20 @@ class Game {
 
   moveCard(id, x, y) {
     const grabbedCard = this.cardsMap[id];
+
+    // If x or y are undefined, then grabbedCard.x will be NaN.
+    if (!x) {
+      x = 0;
+    }
+    if (!y) {
+      y = 0;
+    }
     grabbedCard.x += x;
     grabbedCard.y += y;
     if (this.doesNotTouchAnyCards(grabbedCard)) {
-      grabbedCard.freed = true;
+      if (!this.isRules(grabbedCard)) {
+        grabbedCard.freed = true;
+      }
       this.moveCardToTop(grabbedCard);
     }
   }
@@ -61,16 +71,26 @@ class Game {
     return this.cardsMap[id];
   }
 
+  isRules(card) {
+    const id = "" + card.getID();
+    return id.startsWith('rules');
+  }
+
   getRankAndSuit(card) {
+    if (this.isRules(card)) {
+      return null;
+    }
     return this.rankSuiteMap[card.getID()];
   }
 
   releaseCard(id) {
     const grabbedCard = this.cardsMap[id];
     if (grabbedCard.freed && grabbedCard.distanceFromCenter() > Card.HEIGHT * 2.5) {
-      const rankAndSuite = this.rankSuiteMap[id];
-      grabbedCard.rank = rankAndSuite.rank;
-      grabbedCard.suite = rankAndSuite.suite;
+      const rankAndSuite = this.getRankAndSuit(grabbedCard);
+      if (rankAndSuite != null) {
+        grabbedCard.rank = rankAndSuite.rank;
+        grabbedCard.suite = rankAndSuite.suite;
+      }
       this.moveCardDown(grabbedCard);
       this.nextTurn();
     }
@@ -143,7 +163,41 @@ class Game {
       cards.push(card);
       cardsMap[i] = card;
     }
+
+    this.addRuleCards(cards, cardsMap)
     return {cards, cardsMap};
+  }
+
+  addRuleCards(cards, cardsMap) {
+    const rulesWidth = 426;
+    const rulesHeight = 354;
+    const rulesRotation = 0.1;
+    const rules1 = new Card(
+      'rules1',
+      -0.1,
+      -590,
+      -250,
+      false,
+      null,
+      null,
+      rulesWidth,
+      rulesHeight
+    );
+    const rules2 = new Card(
+      'rules2',
+      0.2,
+      -630,
+      110,
+      false,
+      null,
+      null,
+      rulesWidth,
+      rulesHeight
+    );
+    cards.splice(0, 0, rules2);
+    cardsMap['rules2'] = rules2;
+    cards.splice(0, 0, rules1);
+    cardsMap['rules1'] = rules1;
   }
 
   resetAndMakeCards() {

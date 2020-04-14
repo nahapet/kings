@@ -20,7 +20,7 @@ class Card {
     ];
   }
 
-  constructor(id, rotation, x, y, freed, rank, suite) {
+  constructor(id, rotation, x, y, freed, rank, suite, width, height) {
     this.id = id;
     this.rotation = rotation;
     this.x = x;
@@ -28,6 +28,17 @@ class Card {
     this.freed = freed;
     this.rank = rank;
     this.suite = suite;
+
+    if (width) {
+      this.width = width;
+    } else {
+      this.width = Card.WIDTH;
+    }
+    if (height) {
+      this.height = height;
+    } else {
+      this.height = Card.HEIGHT;
+    }
   }
 
   getID() {
@@ -46,10 +57,10 @@ class Card {
     if (Number.isInteger(2 * this.rotation / Math.PI)) {
       this.rotation += 0.01;
     }
-    const a = Card.HEIGHT * Math.cos(this.rotation);
-    const b = Card.WIDTH * Math.sin(this.rotation);
-    const c = Card.WIDTH * Math.cos(this.rotation);
-    const d = Card.HEIGHT * Math.sin(this.rotation);
+    const a = this.height * Math.cos(this.rotation);
+    const b = this.width * Math.sin(this.rotation);
+    const c = this.width * Math.cos(this.rotation);
+    const d = this.height * Math.sin(this.rotation);
     const p1x = this.x - (c + d) / 2;
     const p1y = this.y + (a - b) / 2;
     const p2x = this.x - (d - c) / 2;
@@ -82,8 +93,8 @@ class Card {
   }
 
   draw(ctx, cardImage) {
-    let width = Card.WIDTH;
-    let height = Card.HEIGHT;
+    let width = this.width;
+    let height = this.height;
     if (this.freed) {
       width *= 1.5;
       height *= 1.5;
@@ -100,7 +111,6 @@ class Card {
     ctx.shadowOffsetX = 1;
     ctx.shadowOffsetY = 1;
     ctx.fillRect(0, 0, width, height);
-
     ctx.drawImage(cardImage, 0, 0, width, height);
     ctx.restore();
   }

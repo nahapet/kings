@@ -24,6 +24,10 @@ class Graphics {
     this.tableImage.src = 'images/stone.jpg';
     this.logoImage = new Image();
     this.logoImage.src = 'images/logo.png';
+    this.rules1Image = new Image();
+    this.rules1Image.src = 'images/rules1.png';
+    this.rules2Image = new Image();
+    this.rules2Image.src = 'images/rules2.png';
 
     Card.RANKS.forEach(rank => {
       this.cardFaceImages[rank] = {};
@@ -31,17 +35,20 @@ class Graphics {
   }
 
   drawLoop() {
+    this.ctx.save();
     this.clearAndResize();
     this.drawCards();
+    this.ctx.restore();
     setTimeout(this.drawLoop.bind(this), 100);
   }
 
   onResize() {
     if (this.scale == null) {
-      this.scale = 1;
+      this.scale = 1.5;
     }
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const canvasDensity = 2;
+    const width = window.innerWidth * canvasDensity;
+    const height = window.innerHeight * canvasDensity;
     const diameter = this.scale * Card.HEIGHT * 5;
     if (diameter > width || diameter > height) {
       const scaleX = width / diameter;
@@ -53,16 +60,19 @@ class Graphics {
   }
 
   clearAndResize() {
+    const canvasDensity = 2;
+
     const ctx = this.ctx;
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const width = window.innerWidth * canvasDensity;
+    const height = window.innerHeight * canvasDensity;
     if (this.scale == null) {
       this.onResize();
     }
 
     this.canvas.width = width;
     this.canvas.height = height;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    this.canvas.style =
+      `width: ${width / canvasDensity}px; height: ${height / canvasDensity}px`;
     this.drawBackground(width, height);
 
     this.translateX = width / 2;
@@ -93,7 +103,12 @@ class Graphics {
     for (const i in cards) {
       const card = cards[i];
       const {rank, suite} = card.getRankAndSuite();
-      if (rank == null || suite == null) {
+
+      if (card.getID() == 'rules1') {
+        card.draw(this.ctx, this.rules1Image);
+      } else if (card.getID() == 'rules2') {
+        card.draw(this.ctx, this.rules2Image);
+      } else if (rank == null || suite == null) {
         card.draw(this.ctx, this.cardBackImage);
       } else {
         const image = this.downloadCardImage(rank, suite);
@@ -113,15 +128,15 @@ class Graphics {
   }
 
   convertRealToVirtualX(x) {
-    return (x - this.translateX - this.dragX) / this.scale;
+    return (2 * x - this.translateX - this.dragX) / this.scale;
   }
 
   convertRealToVirtualY(y) {
-    return (y - this.translateY - this.dragY) / this.scale;
+    return (2 * y - this.translateY - this.dragY) / this.scale;
   }
 
   convertToVirtualScale(n) {
-    return n / this.scale;
+    return 2 * n / this.scale;
   }
 
   dragScreen(x, y) {

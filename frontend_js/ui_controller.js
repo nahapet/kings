@@ -31,7 +31,7 @@ class UIController {
     const body = document.getElementsByTagName("body")[0];
     body.className = 'playing';
     const gameIDElement = document.getElementById('gameID');
-    gameIDElement.innerHTML = '<span>Game ID:</span>' + gameID;
+    gameIDElement.innerHTML = 'Game ID:<span>' + gameID + '</span>';
   }
 
   updatePlayers(data) {
@@ -80,7 +80,9 @@ class UIController {
       card.y,
       card.freed,
       card.rank,
-      card.suite
+      card.suite,
+      card.width,
+      card.height
     );
   }
 
@@ -124,6 +126,7 @@ class UIController {
 
   grabCard(grabbedCard) {
     this.grabbedCardID = grabbedCard.id;
+    this.socket.emit('card move', { id: grabbedCard.id, x: 0, y: 0});
   }
 
   releaseCard() {

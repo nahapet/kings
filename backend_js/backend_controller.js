@@ -6,36 +6,48 @@ class BackendController {
     this.debug = false;
     this.games = {};
     this.io = io;
+    this.totalPlayers = 0;
   }
 
   handle(e) {
     if (this.debug) {
       throw e;
     }
+    console.error(e);
   }
 
   initIO() {
     this.io.on('connection', (socket) => {
+      this.totalPlayers = this.totalPlayers + 1;
+
+      // Must be scoped to this socket.
       let game = null;
       let playerName = null;
 
-      const dummyCards = new Game().makeCards().cards;
-      socket.emit('card data', dummyCards);
+      const log = (message) => {
+        let gameID = null;
+        if (game) {
+          gameID = game.getID();
+        }
+        console.log(`Game: ${gameID}, player: ${playerName}, message: ${message}`);
+      };
 
-      socket.on('disconnect', () => {
+      const onDisconnect = () => {
         try {
           if (game == null) {
             return;
           }
           game.removePlayer(playerName);
           this.emitPlayers(game.getID());
+          log('disconnect');
         } catch (e) {
           this.handle(e);
         }
-      });
+      };
 
-      socket.on('enter', (data) => {
+      const onEnter = (data) => {
         try {
+          log('enter');
           const {name, gameID, verifyGameID} = data;
           const isValid = this.gameIDExists(gameID);
           if (isValid) {
@@ -43,6 +55,7 @@ class BackendController {
             game = gameAndPlayer.game;
             playerName = gameAndPlayer.playerName;
             this.joinGame(socket, game);
+            log('add player');
             return;
           } else {
             if (verifyGameID) {
@@ -53,14 +66,15 @@ class BackendController {
             game = gameAndPlayer.game;
             playerName = gameAndPlayer.playerName;
             this.joinGame(socket, game);
+            log('make new game');
             return;
           }
         } catch (e) {
           this.handle(e);
         }
-      });
+      };
 
-      socket.on('card move', (data) => {
+      const onCardMove = (data) => {
         try {
           if (game == null) {
             return;
@@ -74,13 +88,15 @@ class BackendController {
         } catch (e) {
           this.handle(e);
         }
-      });
+      };
 
-      socket.on('card release', (data) => {
+      const onCardRelease = (data) => {
         try {
           if (game == null) {
             return;
           }
+          log('card release');
+
           const {id} = data;
           const gameID = game.getID();
           const grabbedCard = game.getCardByID(id);
@@ -90,7 +106,16 @@ class BackendController {
         } catch (e) {
           this.handle(e);
         }
-      });
+      };
+
+      log('connection, total player: ' + this.totalPlayers);
+      const dummyCards = new Game().makeCards().cards;
+      socket.emit('card data', dummyCards);
+
+      socket.on('disconnect', onDisconnect);
+      socket.on('enter', onEnter);
+      socket.on('card move', onCardMove);
+      socket.on('card release', onCardRelease);
     });
   }
 
@@ -154,7 +179,9 @@ class BackendController {
   emitCardDownload(gameID, card) {
     const game = this.games[gameID];
     const rankAndSuite = game.getRankAndSuit(card);
-    this.io.to(gameID).emit('card download', rankAndSuite);
+    if (rankAndSuite != null) {
+      this.io.to(gameID).emit('card download', rankAndSuite);
+    }
   }
 
   emitPlayers(gameID) {

@@ -29,8 +29,7 @@
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.19.0",
-    "eslint-plugin-react-hooks": "^2.5.1",
-    "serve-favicon": "^2.5.0"
+    "eslint-plugin-react-hooks": "^2.5.1"
   },
   "cloud-repo-tools": {
     "requiresKeyFile": true,
