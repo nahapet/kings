@@ -16,6 +16,12 @@ div {
   display: flex;
 }
 
+#canvas2 {
+  position: absolute;
+  top: 100%;
+  left: 100%;
+}
+
 .playing #overlay {
   display: none;
 }

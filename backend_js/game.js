@@ -40,6 +40,13 @@ class Game {
     };
   }
 
+  getActivePlayer() {
+    if (this.players.length === 0) {
+      return null;
+    }
+    return this.players[this.currentPlayerIndex % this.players.length];
+  }
+
   removePlayer(playerName) {
     const nameIndex = this.players.indexOf(playerName);
     if (nameIndex >= 0) {

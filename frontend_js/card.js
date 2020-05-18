@@ -2,11 +2,11 @@
 
 class Card {
   static get WIDTH() {
-    return 150;
+    return 154;
   }
 
   static get HEIGHT() {
-    return 210;
+    return 214;
   }
 
   static get SUITES() {
@@ -39,6 +39,20 @@ class Card {
     } else {
       this.height = Card.HEIGHT;
     }
+  }
+
+  static from(card) {
+    return new Card(
+      card.id,
+      card.rotation,
+      card.x,
+      card.y,
+      card.freed,
+      card.rank,
+      card.suite,
+      card.width,
+      card.height
+    );
   }
 
   getID() {
@@ -104,13 +118,6 @@ class Card {
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
     ctx.translate(-width / 2, -height / 2);
-
-    ctx.fillStyle = "rgba(0,0,0,0.01)";
-    ctx.shadowColor = "rgba(0,0,0,1)";
-    ctx.shadowBlur = 3;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-    ctx.fillRect(0, 0, width, height);
     ctx.drawImage(cardImage, 0, 0, width, height);
     ctx.restore();
   }

@@ -1,10 +1,12 @@
 // Copyright 2020, Zaven Nahapetyan
 
 class Graphics {
-  constructor(controller, canvas, ctx) {
+  constructor(controller, onScreenCanvas, offScreenCanvas, onScreenCTX, offScreenCTX) {
     this.controller = controller;
-    this.canvas = canvas;
-    this.ctx = ctx;
+    this.onScreenCanvas = onScreenCanvas;
+    this.offScreenCanvas = offScreenCanvas;
+    this.onScreenCTX = onScreenCTX;
+    this.ctx = offScreenCTX;
     this.dragX = 0;
     this.dragY = 0;
     this.scale = null;
@@ -13,7 +15,7 @@ class Graphics {
     this.tableImage = null;
     this.cardFaceImages = {};
     this.loadImages();
-    this.drawLoop();
+    window.requestAnimationFrame(this.drawLoop.bind(this));
     window.addEventListener('resize', this.onResize.bind(this));
   }
 
@@ -39,7 +41,8 @@ class Graphics {
     this.clearAndResize();
     this.drawCards();
     this.ctx.restore();
-    setTimeout(this.drawLoop.bind(this), 100);
+    this.onScreenCTX.drawImage(this.offScreenCanvas, 0, 0);
+    window.requestAnimationFrame(this.drawLoop.bind(this));
   }
 
   onResize() {
@@ -69,9 +72,12 @@ class Graphics {
       this.onResize();
     }
 
-    this.canvas.width = width;
-    this.canvas.height = height;
-    this.canvas.style =
+    this.onScreenCanvas.width = width;
+    this.onScreenCanvas.height = height;
+    this.offScreenCanvas.width = width;
+    this.offScreenCanvas.height = height;
+
+    this.onScreenCanvas.style =
       `width: ${width / canvasDensity}px; height: ${height / canvasDensity}px`;
     this.drawBackground(width, height);
 

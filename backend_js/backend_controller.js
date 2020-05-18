@@ -79,7 +79,7 @@ class BackendController {
           if (game == null) {
             return;
           }
-          const {id, x, y} = data;
+          const {name, id, x, y} = data;
           const gameID = game.getID();
           game.moveCard(id, x, y);
           const grabbedCard = game.getCardByID(id);
@@ -172,8 +172,12 @@ class BackendController {
 
   emitSingleCard(gameID, grabbedCard) {
     const game = this.games[gameID];
+    const activePlayerName = game.getActivePlayer();
     const id = grabbedCard.getID();
-    this.io.to(game.getID()).emit('single card data', {id, card: grabbedCard});
+    this.io.to(game.getID()).emit(
+      'single card data',
+      {id, card: grabbedCard, name: activePlayerName}
+    );
   }
 
   emitCardDownload(gameID, card) {

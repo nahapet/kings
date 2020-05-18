@@ -84,9 +84,11 @@ class MouseHandler {
     this.dragY = event.clientY;
 
     if (this.controller.isCardGrabbed()) {
-      const x = this.graphics.convertToVirtualScale(moveByX);
-      const y = this.graphics.convertToVirtualScale(moveByY);
-      this.controller.moveCard(x, y);
+      const byX = this.graphics.convertToVirtualScale(moveByX);
+      const byY = this.graphics.convertToVirtualScale(moveByY);
+      const toX = this.graphics.convertRealToVirtualX(event.clientX);
+      const toY = this.graphics.convertRealToVirtualY(event.clientY);
+      this.controller.moveCard(byX, byY, toX, toY);
     } else if (this.isDraggingScreen) {
       this.graphics.dragScreen(moveByX, moveByY);
     }

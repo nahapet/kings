@@ -4,17 +4,19 @@ class UIController {
   constructor() {
     this.name = null;
     this.socket = io();
-    this.canvas = document.getElementById('canvas');
+    this.onScreenCanvas = document.getElementById('canvas');
+    this.offScreenCanvas = document.getElementById('canvas2');
     this.slider = document.getElementById("slider");
-    this.graphicsContext = canvas.getContext('2d');
+    this.onScreenCTX = this.onScreenCanvas.getContext('2d');
+    this.offScreenCTX = this.offScreenCanvas.getContext('2d');
     this.cards = [];
-    this.grabbedCardID = null;
+    this.grabbedCard = null;
     this.players = [];
     this.currentPlayerIndex = null;
   }
 
   begin() {
-    this.graphics = new Graphics(this, this.canvas, this.graphicsContext);
+    this.graphics = new Graphics(this, this.onScreenCanvas, this.offScreenCanvas, this.onScreenCTX, this.offScreenCTX);
     new MouseHandler(this, this.graphics, this.slider);
     this.socket.on('card data', this.updateCardsFromScocket.bind(this));
     this.socket.on('single card data', this.updateSingleCardFromScocket.bind(this));
@@ -72,34 +74,26 @@ class UIController {
     this.socket.emit('enter', {name, gameID, verifyGameID});
   }
 
-  cloneCard(card) {
-    return new Card(
-      card.id,
-      card.rotation,
-      card.x,
-      card.y,
-      card.freed,
-      card.rank,
-      card.suite,
-      card.width,
-      card.height
-    );
-  }
-
   updateCardsFromScocket(cardData) {
     this.cards = [];
     cardData.forEach((card) => {
-      const newCard = this.cloneCard(card);
+      const newCard = Card.from(card);
       this.cards.push(newCard);
     });
   }
 
   updateSingleCardFromScocket(data) {
-    const {id, card} = data;
+    const {id, card, name} = data;
     for (let i in this.cards) {
       const oldCard = this.cards[i];
       if (oldCard.id == id) {
-        this.cards[i] = this.cloneCard(card);
+        if (this.grabbedCard == null || name != this.name) {
+          oldCard.x = card.x;
+          oldCard.y = card.y;
+        }
+        oldCard.freed = card.freed;
+        oldCard.rank = card.rank;
+        oldCard.suite = card.suite;
         return;
       }
     }
@@ -121,26 +115,29 @@ class UIController {
   }
 
   isCardGrabbed() {
-    return this.grabbedCardID !== null;
+    return this.grabbedCard !== null;
   }
 
   grabCard(grabbedCard) {
-    this.grabbedCardID = grabbedCard.id;
-    this.socket.emit('card move', { id: grabbedCard.id, x: 0, y: 0});
+    this.grabbedCard = grabbedCard;
+    this.socket.emit('card move', { id: grabbedCard.getID(), x: 0, y: 0});
   }
 
   releaseCard() {
-    if (this.grabbedCardID != null) {
-      this.socket.emit('card release', { id: this.grabbedCardID });
+    if (this.grabbedCard != null) {
+      this.socket.emit('card release', { id: this.grabbedCard.getID() });
     }
-    this.grabbedCardID = null;
+    this.grabbedCard = null;
   }
 
-  moveCard(x, y) {
-    if (this.grabbedCardID == null) {
+  moveCard(byX, byY, toX, toY) {
+    if (this.grabbedCard == null) {
       return;
     }
-    this.socket.emit('card move', { id: this.grabbedCardID, x, y});
+
+    this.grabbedCard.x = toX;
+    this.grabbedCard.y = toY;
+    this.socket.emit('card move', { id: this.grabbedCard.getID(), x: byX, y: byY});
   }
 
   downloadCardImage(data) {
