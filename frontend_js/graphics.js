@@ -47,7 +47,8 @@ class Graphics {
 
   onResize() {
     if (this.scale == null) {
-      this.scale = 1.5;
+      // this.scale = 1.5;
+      this.scale = 1;
     }
     const canvasDensity = 2;
     const width = window.innerWidth * canvasDensity;
@@ -57,7 +58,7 @@ class Graphics {
       const scaleX = width / diameter;
       const scaleY = height / diameter;
       const newAutoScale = Math.min(scaleX, scaleY);
-      this.scale = newAutoScale * this.scale;
+      // this.scale = newAutoScale * this.scale;
       this.controller.updateSlider(this.scale);
     }
   }
@@ -94,11 +95,13 @@ class Graphics {
     const ctx = this.ctx;
     const pattern = ctx.createPattern(this.tableImage, 'repeat');
     if (pattern != null) {
-      const matrix = new DOMMatrix();
-      const transform = matrix
-        .translateSelf(this.dragX + width / 2, this.dragY + height / 2, 0)
-        .scaleSelf(2 * this.scale, 2 * this.scale, 1);
-      pattern.setTransform(transform);
+      try {
+        const matrix = new DOMMatrix();
+        const transform = matrix
+          .translate(this.dragX + width / 2, this.dragY + height / 2, 0)
+          .scale(2 * this.scale, 2 * this.scale, 1);
+        pattern.setTransform(transform);
+      } catch (e) {}
     }
     ctx.fillStyle = pattern;
     ctx.fillRect(0, 0, width, height);

@@ -7,7 +7,7 @@ body {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
-  font-family: "Raleway", sans-serif;
+  font-family: "Open Sans", sans-serif;
   color: #545454;
   font-weight: 100;
 }
@@ -24,14 +24,6 @@ div {
 
 .playing #overlay {
   display: none;
-}
-
-.playing #players {
-  display: flex;
-}
-
-.playing #slider {
-  display: flex;
 }
 
 #overlay {
@@ -61,6 +53,7 @@ div {
   color: white;
   margin-bottom: 20px;
   border-bottom: 1px solid #4c2626;
+  padding-bottom: 20px;
 }
 
 h1 {
@@ -81,7 +74,6 @@ h2 {
   padding-left: 40px;
   padding-right: 40px;
   padding-top: 10px;
-  padding-bottom: 20px;
 }
 
 #enter {
@@ -96,17 +88,21 @@ h2 {
   width: 50%;
   padding: 20px;
   flex-grow: 1;
-  background: #e67777;
+  background: #c72f2f;
   text-align: center;
 }
 
 #enter > span:nth-child(2) {
-  background: #c72f2f;
+  background: #e67777;
   border-left: 1px solid #4c2626;
 }
 
-.join #enter > span:first-child {
-  display: none;
+.join #enter > span {
+  background: #e67777;
+}
+
+.join #enter > span:nth-child(2) {
+  background: #c72f2f;
 }
 
 #input {
@@ -138,10 +134,6 @@ h2 {
   padding-top: 5px;
 }
 
-.join #input > div:nth-child(3) {
-  display: none;
-}
-
 #error {
   display: none;
   color: #c72f2f;
@@ -162,21 +154,20 @@ h2 {
 
 #gameID {
   color: #c72f2f;
-  font-family: "Permanent Marker", sans-serif;
   font-size: x-large;
-  position: fixed;
-  top: 20px;
-  right: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
 #gameID span {
-  font-family: "Raleway", sans-serif;
   padding-left: 10px;
-  user-select: all;
-  -webkit-user-select: all;
 }
 
-#players {
+.playing .sidebar {
+  display: flex;
+}
+
+.sidebar {
   display: none;
   flex-direction: column;
   overflow: scroll;
@@ -185,12 +176,11 @@ h2 {
   right: 0;
   width: 30%;
   height: 100%;
-  margin-top: 60px;
   padding-left: 20px;
   padding-right: 20px;
 }
 
-#players > div {
+.bubble {
   flex-direction: column;
   overflow: hidden;
   justify-content: center;
@@ -201,17 +191,52 @@ h2 {
   box-shadow:
     0 4px 8px 0 rgba(0, 0, 0, 0.85),
     0 6px 20px 0 rgba(117, 34, 34, 0.73);
+}
+
+#invite {
+  cursor: copy;
+}
+
+#invite > span:nth-child(3) {
+  display: none;
+}
+
+#invite.copied > span:nth-child(2) {
+  display: none;
+}
+
+#invite.copied > span:nth-child(3) {
+  display: flex;
+}
+
+#players {
+  flex-direction: column;
+}
+
+#players div {
   opacity: 0.5;
 }
 
-#players > div.current {
+#players div.current {
   opacity: 1;
 }
 
-#slider {
+.playing .zoom {
+  display: flex;
+}
+
+.zoom {
   display: none;
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 200px;
+  width: 250px;
+}
+
+.zoom span {
+  padding-right: 5px;
+}
+
+#slider {
+  width: 100%;
 }

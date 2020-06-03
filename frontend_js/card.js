@@ -66,6 +66,10 @@ class Card {
     };
   }
 
+  isRules() {
+    return ("" + this.id).startsWith('rules');
+  }
+
   getEdges() {
     // Add tiny rotation otherwise the slope of vertical line is undefined.
     if (Number.isInteger(2 * this.rotation / Math.PI)) {
@@ -85,8 +89,13 @@ class Card {
     const p4y = this.y - (a + b) / 2;
     const slope1 = b / c;
     const slope2 = a / d;
+    const centerX = (p1x + p3x) / 2;
+    const centerX2 = (p2x + p4x) / 2;
+    const centerY = (p1y + p3y) / 2;
+    const centerY2 = (p2y + p4y) / 2;
+
     return {
-      slope1, slope2, p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y,
+      slope1, slope2, p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y, centerX, centerY
     };
   }
 
@@ -100,6 +109,36 @@ class Card {
     const s2 = Math.sign(Math.cos(this.rotation));
     return s2 * tapY < s2 * l1(tapX) && s1 * tapY < s1 * l2(tapX)
       && s1 * tapY > s1 * l3(tapX) && s2 * tapY > s2 * l4(tapX);
+  }
+
+  intersectsCard(card) {
+    if (card.id === this.id) {
+      return false;
+    }
+
+    let e = card.getEdges();
+    const thatOnThis =
+      this.intersects(e.p1x, e.p1y)
+      || this.intersects(e.p2x, e.p2y)
+      || this.intersects(e.p3x, e.p3y)
+      || this.intersects(e.p4x, e.p4y)
+      || this.intersects(e.centerX, e.centerY);
+    if (thatOnThis) {
+      return true;
+    }
+
+    e = this.getEdges();
+    const thisOnThat =
+      card.intersects(e.p1x, e.p1y)
+      || card.intersects(e.p2x, e.p2y)
+      || card.intersects(e.p3x, e.p3y)
+      || card.intersects(e.p4x, e.p4y)
+      || card.intersects(e.centerX, e.centerY);
+    if (thisOnThat) {
+      return true;
+    }
+
+    return false;
   }
 
   distanceFromCenter() {
