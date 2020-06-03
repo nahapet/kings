@@ -9,6 +9,7 @@ class MouseHandler {
     this.isZooming = false;
     this.dragX = null;
     this.dragY = null;
+    this.inviteButton = null;
     this.initListeners();
   }
 
@@ -25,6 +26,8 @@ class MouseHandler {
     document.addEventListener('keyup', this.enterGameKey.bind(this));
     const joinGameButton = document.getElementById("join");
     joinGameButton.addEventListener("click", this.joinGame.bind(this));
+    this.inviteButton = document.getElementById("invite");
+    this.inviteButton.addEventListener("click", this.copyInvite.bind(this));
 
     this.slider.addEventListener("mousedown", this.zoomStart.bind(this));
     this.slider.addEventListener("touchstart", this.zoomStart.bind(this));
@@ -86,9 +89,7 @@ class MouseHandler {
     if (this.controller.isCardGrabbed()) {
       const byX = this.graphics.convertToVirtualScale(moveByX);
       const byY = this.graphics.convertToVirtualScale(moveByY);
-      const toX = this.graphics.convertRealToVirtualX(event.clientX);
-      const toY = this.graphics.convertRealToVirtualY(event.clientY);
-      this.controller.moveCard(byX, byY, toX, toY);
+      this.controller.moveCard(byX, byY);
     } else if (this.isDraggingScreen) {
       this.graphics.dragScreen(moveByX, moveByY);
     }
@@ -126,6 +127,11 @@ class MouseHandler {
     this.enterGame(event, true);
   }
 
+  copyInvite() {
+    event.stopPropagation();
+    this.controller.copyInvite(this.inviteButton);
+  }
+
   zoomStart(event) {
     event.stopPropagation();
     this.isZooming = true;
@@ -136,7 +142,7 @@ class MouseHandler {
       return;
     }
     event.stopPropagation();
-    this.controller.setZoom(event.toElement.value);
+    this.controller.setZoom(event.target.value);
   }
 
   zoomEnd(event) {

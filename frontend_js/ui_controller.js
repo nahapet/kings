@@ -18,6 +18,7 @@ class UIController {
   begin() {
     this.graphics = new Graphics(this, this.onScreenCanvas, this.offScreenCanvas, this.onScreenCTX, this.offScreenCTX);
     new MouseHandler(this, this.graphics, this.slider);
+    this.prefillGameID();
     this.socket.on('card data', this.updateCardsFromScocket.bind(this));
     this.socket.on('single card data', this.updateSingleCardFromScocket.bind(this));
     this.socket.on('register name', this.updateName.bind(this));
@@ -27,6 +28,17 @@ class UIController {
     this.socket.on('rearrange cards', this.rearrangeCards.bind(this));
   }
 
+  prefillGameID() {
+    const hash = window.location.hash;
+    if (hash.startsWith('#')) {
+      const gameID = hash.substring(1);
+      const code = document.getElementById("code");
+      code.value = gameID;
+      const overlay = document.getElementById("overlay");
+      overlay.className += ' join';
+    }
+  }
+
   updateName(data) {
     const {playerName, gameID} = data;
     this.name = playerName;
@@ -34,6 +46,7 @@ class UIController {
     body.className = 'playing';
     const gameIDElement = document.getElementById('gameID');
     gameIDElement.innerHTML = 'Game ID:<span>' + gameID + '</span>';
+    window.location.hash = '#' + gameID;
   }
 
   updatePlayers(data) {
@@ -47,12 +60,13 @@ class UIController {
     for (let i in this.players) {
       const player = this.players[i];
       const playerElem = document.createElement('div');
+      playerElem.className = 'bubble';
       playerElem.innerHTML = player;
       if (player == this.name) {
         playerElem.innerHTML += ' (You)';
       }
       if (i == this.currentPlayerIndex) {
-        playerElem.className = 'current';
+        playerElem.className += ' current';
       }
       playerContainer.appendChild(playerElem);
     }
@@ -87,7 +101,7 @@ class UIController {
     for (let i in this.cards) {
       const oldCard = this.cards[i];
       if (oldCard.id == id) {
-        if (this.grabbedCard == null || name != this.name) {
+        if (name != this.name) {
           oldCard.x = card.x;
           oldCard.y = card.y;
         }
@@ -130,13 +144,13 @@ class UIController {
     this.grabbedCard = null;
   }
 
-  moveCard(byX, byY, toX, toY) {
+  moveCard(byX, byY) {
     if (this.grabbedCard == null) {
       return;
     }
 
-    this.grabbedCard.x = toX;
-    this.grabbedCard.y = toY;
+    this.grabbedCard.x += byX;
+    this.grabbedCard.y += byY;
     this.socket.emit('card move', { id: this.grabbedCard.getID(), x: byX, y: byY});
   }
 
@@ -153,6 +167,13 @@ class UIController {
   updateSlider(scale) {
     const value = Math.log10(scale) * 100;
     this.slider.value = value;
+  }
+
+  copyInvite(inviteButton) {
+    navigator.clipboard.writeText(window.location.href);
+    const oldClass = inviteButton.className;
+    inviteButton.className += ' copied';
+    setTimeout(() => {inviteButton.className = oldClass;}, 1000);
   }
 }
 

@@ -67,7 +67,7 @@ class Game {
     grabbedCard.x += x;
     grabbedCard.y += y;
     if (this.doesNotTouchAnyCards(grabbedCard)) {
-      if (!this.isRules(grabbedCard)) {
+      if (!grabbedCard.isRules()) {
         grabbedCard.freed = true;
       }
       this.moveCardToTop(grabbedCard);
@@ -78,13 +78,8 @@ class Game {
     return this.cardsMap[id];
   }
 
-  isRules(card) {
-    const id = "" + card.getID();
-    return id.startsWith('rules');
-  }
-
   getRankAndSuit(card) {
-    if (this.isRules(card)) {
+    if (card.isRules()) {
       return null;
     }
     return this.rankSuiteMap[card.getID()];
@@ -94,12 +89,14 @@ class Game {
     const grabbedCard = this.cardsMap[id];
     if (grabbedCard.freed && grabbedCard.distanceFromCenter() > Card.HEIGHT * 2.5) {
       const rankAndSuite = this.getRankAndSuit(grabbedCard);
-      if (rankAndSuite != null) {
-        grabbedCard.rank = rankAndSuite.rank;
-        grabbedCard.suite = rankAndSuite.suite;
+      if (grabbedCard.rank == null && grabbedCard.suite == null) {
+        if (rankAndSuite != null) {
+          grabbedCard.rank = rankAndSuite.rank;
+          grabbedCard.suite = rankAndSuite.suite;
+        }
+        this.nextTurn();
       }
       this.moveCardDown(grabbedCard);
-      this.nextTurn();
     }
     grabbedCard.freed = false;
   }
@@ -121,13 +118,7 @@ class Game {
     let otherCardIndex = this.cards.length - 1;
     for (; otherCardIndex >= 0; otherCardIndex--) {
       const otherCard = this.cards[otherCardIndex];
-      if (card.id === otherCard.id) {
-        continue;
-      }
-      if (otherCard.intersects(e.p1x, e.p1y)
-        || otherCard.intersects(e.p2x, e.p2y)
-        || otherCard.intersects(e.p3x, e.p3y)
-        || otherCard.intersects(e.p4x, e.p4y)) {
+      if (card.intersectsCard(otherCard)) {
         break;
       }
     }
@@ -144,10 +135,7 @@ class Game {
       if (card.id === otherCard.id) {
         return true;
       }
-      if (otherCard.intersects(e.p1x, e.p1y)
-        || otherCard.intersects(e.p2x, e.p2y)
-        || otherCard.intersects(e.p3x, e.p3y)
-        || otherCard.intersects(e.p4x, e.p4y)) {
+      if (card.intersectsCard(otherCard)) {
         return false;
       }
     }

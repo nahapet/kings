@@ -11,7 +11,7 @@
 </script>
 <title>King's Cup Drinking Game Online</title>
 <link href='http://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="main.css">
 <meta name="description" content="Play the King's Cup drinking game online now! Perfect for team happy hours and virtual hang outs. Enjoy the modern spin on this classic drinking game with friends.">
 <meta name="keywords" content="Online Happy Hour, Drinking Game, King's Cup, King's Cup Online, Online Drinking Game, Zoom Drinking Game, Sociables">
@@ -23,31 +23,41 @@
 </head>
 <body>
 <div id="overlay">
-<div>
-  <div id="header">
-    <h1>King's Cup Online</h1>
-    <h2>A multi-player online game of King's Cup with friends!</h2>
-  </div>
-  <div id="input">
-    <span id="error">Error. Please enter a valid Game ID to join.</span>
-    <div>
-      <span>Your Name:</span>
-      <input id="name" placeholder="E.g. Silly Goose"></input>
+  <div>
+    <div id="header">
+      <h1>King's Cup Online</h1>
+      <h2>Play multi-player King's Cup online with friends!</h2>
+      <h2>Spice up virtual happy hours with this online drinking game.</h2>
     </div>
-    <div>
-      <span>Game to Join (Optional):</span>
-      <input id="code" placeholder="Game to join"></input>
+    <div id="input">
+      <span id="error">Error. Please enter a valid Game ID to join.</span>
+      <div>
+        <span>Enter your name:</span>
+        <input id="name" placeholder="E.g. Silly Goose"></input>
+      </div>
+      <div>
+        <span>(Optional) Enter game ID to join:</span>
+        <input id="code" placeholder="Game to join"></input>
+      </div>
     </div>
-  </div>
-  <div id="enter">
-    <span>New Game</span>
-    <span id="join">Join Game</span>
+    <div id="enter">
+      <span>Create New Game</span>
+      <span id="join">Join Existing Game</span>
+    </div>
   </div>
 </div>
+<div class="sidebar">
+  <div id="invite" class="bubble">
+    <span id="gameID"></span>
+    <span>Click to copy game link!</span>
+    <span>Copied to clipboard!</span>
+  </div>
+  <div id="players"></div>
 </div>
-<span id="gameID"></span>
-<div id="players"></div>
-<input type="range" min="-40" max="40" value="0" id="slider"></input>
+<div class="zoom">
+  <span>Zoom:</span>
+  <input type="range" min="-40" max="40" value="0" id="slider"></input>
+</div>
 <canvas id="canvas2"></canvas>
 <canvas id="canvas"></canvas>
 <script src="/socket.io/socket.io.js"></script>
