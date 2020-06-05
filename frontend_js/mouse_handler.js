@@ -21,6 +21,11 @@ class MouseHandler {
     document.addEventListener('mouseup', this.mouseup.bind(this));
     document.addEventListener('touchend', this.mouseup.bind(this));
 
+    const playerScroll = document.getElementById("players");
+    playerScroll.addEventListener('touchstart', this.suppressTouch.bind(this));
+    playerScroll.addEventListener('touchmove', this.suppressTouch.bind(this));
+    playerScroll.addEventListener('touchend', this.suppressTouch.bind(this));
+
     const enterNameButton = document.getElementById("enter");
     enterNameButton.addEventListener("click", this.enterGame.bind(this));
     document.addEventListener('keyup', this.enterGameKey.bind(this));
@@ -35,6 +40,10 @@ class MouseHandler {
     this.slider.addEventListener("touchmove", this.zoom.bind(this));
     this.slider.addEventListener("mouseup", this.zoomEnd.bind(this));
     this.slider.addEventListener("touchend", this.zoomEnd.bind(this));
+  }
+
+  suppressTouch(event) {
+    event.stopPropagation();
   }
 
   mousedown(event) {

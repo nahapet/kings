@@ -8,7 +8,7 @@ class Graphics {
     this.onScreenCTX = onScreenCTX;
     this.ctx = offScreenCTX;
     this.dragX = 0;
-    this.dragY = 0;
+    this.dragY = -200;
     this.scale = null;
 
     this.cardBackImage = null;

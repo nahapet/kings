@@ -170,8 +170,8 @@ class Game {
     const rules1 = new Card(
       'rules1',
       -0.1,
-      -590,
-      -250,
+      -160,
+      580,
       false,
       null,
       null,
@@ -181,8 +181,8 @@ class Game {
     const rules2 = new Card(
       'rules2',
       0.2,
-      -630,
-      110,
+      250,
+      630,
       false,
       null,
       null,

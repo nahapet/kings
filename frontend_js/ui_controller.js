@@ -3,6 +3,7 @@
 class UIController {
   constructor() {
     this.name = null;
+    this.gameID = null;
     this.socket = io();
     this.onScreenCanvas = document.getElementById('canvas');
     this.offScreenCanvas = document.getElementById('canvas2');
@@ -19,6 +20,7 @@ class UIController {
     this.graphics = new Graphics(this, this.onScreenCanvas, this.offScreenCanvas, this.onScreenCTX, this.offScreenCTX);
     new MouseHandler(this, this.graphics, this.slider);
     this.prefillGameID();
+    this.socket.on('reconnect', this.reconnect.bind(this));
     this.socket.on('card data', this.updateCardsFromScocket.bind(this));
     this.socket.on('single card data', this.updateSingleCardFromScocket.bind(this));
     this.socket.on('register name', this.updateName.bind(this));
@@ -39,9 +41,17 @@ class UIController {
     }
   }
 
+  reconnect() {
+    this.socket.emit(
+      'enter',
+      {name: this.name, gameID: this.gameID, verifyGameID: false}
+    );
+  }
+
   updateName(data) {
     const {playerName, gameID} = data;
     this.name = playerName;
+    this.gameID = gameID;
     const body = document.getElementsByTagName("body")[0];
     body.className = 'playing';
     const gameIDElement = document.getElementById('gameID');
