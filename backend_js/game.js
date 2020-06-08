@@ -9,6 +9,7 @@ class Game {
     this.cards = [];
     this.cardsMap = {};
     this.rankSuiteMap = {};
+    this.inactives = {};
     this.resetAndMakeCards();
   }
 
@@ -21,8 +22,13 @@ class Game {
   }
 
   addPlayer(playerName) {
-    playerName = this.sanitizeName(playerName);
-    this.players.push(playerName);
+    if (this.inactives[playerName] !== undefined) {
+      this.reconnectPlayer(playerName);
+    } else {
+      playerName = this.sanitizeName(playerName);
+      this.players.push(playerName);
+    }
+    
     return playerName;
   }
 
@@ -47,11 +53,51 @@ class Game {
     return this.players[this.currentPlayerIndex % this.players.length];
   }
 
-  removePlayer(playerName) {
+  disconnectPlayer(playerName, log) {
+    const removeInMS = 10 * 1000;
+    this.inactives[playerName] = setTimeout(
+      () => {
+        this.removePlayer(playerName, log);
+        delete this.inactives[playerName];
+      },
+      removeInMS
+    );
+  }
+
+  reconnectPlayer(playerName) {
+    const timeout = this.inactives[playerName];
+    if (timeout === undefined) {
+      return;
+    }
+    clearTimeout(timeout);
+    delete this.inactives[playerName];
+  }
+
+  removePlayer(playerName, log) {
     const nameIndex = this.players.indexOf(playerName);
     if (nameIndex >= 0) {
       this.players.splice(nameIndex, 1);
     }
+    if (log) {
+      log('remove player');
+    }
+
+    if (this.players.length > 0) {
+      this.controller.emitPlayers(this.getID());
+    } else {
+      this.controller.deleteGame(this.getID(),log);
+    }
+  }
+
+  changePlayerName(playerName, newName) {
+    const index = this.players.indexOf(playerName);
+    if (index === -1) {
+      return playerName;
+    }
+
+    newName = this.sanitizeName(newName);
+    this.players[index] = newName;
+    return newName;
   }
 
   moveCard(id, x, y) {
@@ -222,12 +268,36 @@ class Game {
 
   sanitizeName(name) {
     if (typeof name !== 'string' || name == '') {
-      name = 'Silly Goose';
+      name = this.randomName();
     }
     if (this.players.indexOf(name) === -1) {
       return name;
     }
-    return this.sanitizeName(name + ' 2');
+    return this.sanitizeName(name + this.randomNameEnding());
+  }
+
+  randomName() {
+    const adjectives = [
+      'Cool', 'Silly', 'Big', 'Lil\'', 'King', 'Queen', 'Sir', 'Smelly', 'Hot',
+      'Sexy', 'Tiny', 'Funny', 'Giggly', 'Bougie', 'Sour', 'Fuzzy', 'Cuddly',
+      'Strong', 'Long', 'Wrinkly', 'Silky', 'Soft', 'Grumpy', 'Crusty', 'Handsome',
+      'Classy', 'Nasty', 'Moody', 'Dehydrated', 'Hungry', 'Danger', 'Boople'
+    ];
+    const nouns = [
+      'Goose', 'Bear', 'Bae', 'Sock', 'Spoon', 'Candle', 'Banana', 'Tiger',
+      'Toad', 'Lemon', 'Basket', 'Horse', 'Butterfly', 'Slug', 'Flower',
+      'Cat', 'Sky', 'Moose', 'Leopard', 'Seal', 'Peach', 'Diamond', 'Mochi',
+      'Cupcake', 'Bagel', 'Donut', 'Cactus', 'Muffin', 'Puffin', 'Noodle', 'Snoot'
+    ];
+    return adjectives[Math.floor(Math.random() * adjectives.length)]
+      + ' ' + nouns[Math.floor(Math.random() * nouns.length)];
+  }
+
+  randomNameEnding() {
+    const endings = [
+      ', PhD', ' II', ', MD', ' Sr.', ' Jr.', ', JD', ' the Great'
+    ];
+    return endings[Math.floor(Math.random() * endings.length)];
   }
 }
 

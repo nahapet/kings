@@ -26,13 +26,24 @@ class MouseHandler {
     playerScroll.addEventListener('touchmove', this.suppressTouch.bind(this));
     playerScroll.addEventListener('touchend', this.suppressTouch.bind(this));
 
-    const enterNameButton = document.getElementById("enter");
-    enterNameButton.addEventListener("click", this.enterGame.bind(this));
-    document.addEventListener('keyup', this.enterGameKey.bind(this));
-    const joinGameButton = document.getElementById("join");
-    joinGameButton.addEventListener("click", this.joinGame.bind(this));
     this.inviteButton = document.getElementById("invite");
-    this.inviteButton.addEventListener("click", this.copyInvite.bind(this));
+    this.inviteButton.addEventListener("mousedown", this.copyInvite.bind(this));
+
+    const changeName = document.getElementById("changeName");
+    changeName.addEventListener("mousedown", this.openChangeName.bind(this));
+
+    const joinGame = document.getElementById("joinGame");
+    joinGame.addEventListener("mousedown", this.openJoinGame.bind(this));
+
+    const overlay = document.getElementById("overlay");
+    overlay.addEventListener("mousedown", this.closeOverlay.bind(this));
+
+    const input = document.getElementById("input");
+    input.addEventListener("mousedown", this.suppressTouch.bind(this));
+    document.addEventListener('keyup', this.maybeSubmitForm.bind(this));
+
+    const enter = document.getElementById("enter");
+    enter.addEventListener("mousedown", this.submitForm.bind(this));
 
     this.slider.addEventListener("mousedown", this.zoomStart.bind(this));
     this.slider.addEventListener("touchstart", this.zoomStart.bind(this));
@@ -115,35 +126,41 @@ class MouseHandler {
     this.isDraggingScreen = false;
   }
 
-  enterGame(event, verifyGameID) {
-    if (!verifyGameID) {
-      verifyGameID = false;
-    }
-    const name = document.getElementById("name").value;
-    const gameID = document.getElementById("code").value;
-    this.controller.submitName(name, gameID, verifyGameID);
-  }
-
-  enterGameKey(event) {
-    if (event.keyCode !== 13) {
-      return;
-    }
-    this.enterGame(event, false);
-  }
-
-  joinGame(event) {
-    event.stopPropagation();
-    this.enterGame(event, true);
-  }
-
   copyInvite() {
     event.stopPropagation();
     this.controller.copyInvite(this.inviteButton);
   }
 
+  openChangeName() {
+    event.stopPropagation();
+    this.controller.openChangeName();
+  }
+
+  openJoinGame() {
+    event.stopPropagation();
+    this.controller.openJoinGame();
+  }
+
+  closeOverlay() {
+    event.stopPropagation();
+    this.controller.closeOverlay();
+  }
+
   zoomStart(event) {
     event.stopPropagation();
     this.isZooming = true;
+  }
+
+  submitForm() {
+    this.controller.submitForm();
+    this.closeOverlay();
+  }
+
+  maybeSubmitForm(event) {
+    if (event.keyCode !== 13) {
+      return;
+    }
+    this.submitForm();
   }
 
   zoom(event) {

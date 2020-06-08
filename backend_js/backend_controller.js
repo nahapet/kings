@@ -7,6 +7,7 @@ class BackendController {
     this.games = {};
     this.io = io;
     this.totalPlayers = 0;
+    this.gameDeletions = {};
   }
 
   handle(e) {
@@ -37,18 +38,20 @@ class BackendController {
           if (game == null) {
             return;
           }
-          game.removePlayer(playerName);
-          this.emitPlayers(game.getID());
-          log('disconnect');
+          game.disconnectPlayer(playerName, log);
+          log('inactive');
         } catch (e) {
           this.handle(e);
         }
       };
 
-      const onEnter = (data) => {
+      const onJoin = (data) => {
         try {
-          log('enter');
-          const {name, gameID, verifyGameID} = data;
+          log('join');
+          let {name, gameID} = data;
+          if (typeof gameID == 'string') {
+            gameID = gameID.toUpperCase();
+          }
           const isValid = this.gameIDExists(gameID);
           if (isValid) {
             const gameAndPlayer = this.addPlayerToGame(socket, name, gameID);
@@ -58,10 +61,6 @@ class BackendController {
             log('add player');
             return;
           } else {
-            if (verifyGameID) {
-              socket.emit('game ID error');
-              return;
-            }
             const gameAndPlayer = this.makeNewGame(socket, name, gameID);
             game = gameAndPlayer.game;
             playerName = gameAndPlayer.playerName;
@@ -108,14 +107,28 @@ class BackendController {
         }
       };
 
-      log('connection, total player: ' + this.totalPlayers);
-      const dummyCards = new Game().makeCards().cards;
-      socket.emit('card data', dummyCards);
+      const onChangeName = (newName) => {
+        try {
+          if (game == null || playerName == null) {
+            return;
+          }
+          log('change name to: ' + newName);
 
+          const gameID = game.getID();
+          playerName = game.changePlayerName(playerName, newName);
+          socket.emit('register name', {playerName, gameID});
+          this.emitPlayers(gameID);
+        } catch (e) {
+          this.handle(e);
+        }
+      };
+
+      log('connection, total player: ' + this.totalPlayers);
       socket.on('disconnect', onDisconnect);
-      socket.on('enter', onEnter);
+      socket.on('join', onJoin);
       socket.on('card move', onCardMove);
       socket.on('card release', onCardRelease);
+      socket.on('change name', onChangeName);
     });
   }
 
@@ -132,6 +145,7 @@ class BackendController {
     const game = this.games[gameID];
     const playerName = game.addPlayer(name);
     socket.emit('register name', {playerName, gameID});
+    this.emitPlayers(gameID);
     return {game, playerName};
   }
 
@@ -140,6 +154,25 @@ class BackendController {
     socket.join(gameID);
     this.emitPlayers(gameID);
     this.emitCards(game);
+
+    if (this.gameDeletions[gameID] !== undefined) {
+      clearInterval(this.gameDeletions[gameID]);
+      delete this.gameDeletions[gameID];
+    }
+  }
+
+  deleteGame(gameID, log) {
+    const deleteInMS = 1000 * 60 * 10;
+    this.gameDeletions[gameID] = setTimeout(
+      () => {
+        delete this.games[gameID];
+        delete this.gameDeletions[gameID];
+        if (log) {
+          log('deleting game ' + gameID);
+        }
+      },
+      deleteInMS
+    );
   }
 
   gameIDExists(gameID) {
@@ -148,14 +181,14 @@ class BackendController {
 
   createGameID() {
     const available = [
-      '0','1','2','3','4','5','6','7','8','9',
-      'A','B','C','D','E','F','G','H','I','J',
-      'K','L','M','N','O','P','Q','R','S','T',
-      'U','V','W','X','Y','Z'
+      '1','2','3','4','5','6','7','8','9',
+      'J','A','B','C','D','E','F','G','H',
+      'I','K','L','M','N','P','Q','R','S',  // No O
+      'T','U','V','W','X','Y','Z'
     ];
     const rand = () => Math.floor(Math.random() * available.length);
     const randChar = () => available[rand()];
-    const gameID = randChar() + randChar() + randChar() + randChar();
+    const gameID = randChar() + randChar() + randChar() + randChar() + randChar();
     if (!this.gameIDExists(gameID)) {
       return gameID;
     }

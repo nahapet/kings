@@ -8,7 +8,7 @@ class Graphics {
     this.onScreenCTX = onScreenCTX;
     this.ctx = offScreenCTX;
     this.dragX = 0;
-    this.dragY = -200;
+    this.dragY = -100;
     this.scale = null;
 
     this.cardBackImage = null;
@@ -47,8 +47,7 @@ class Graphics {
 
   onResize() {
     if (this.scale == null) {
-      // this.scale = 1.5;
-      this.scale = 1;
+      this.scale = 1.5;
     }
     const canvasDensity = 2;
     const width = window.innerWidth * canvasDensity;
@@ -58,7 +57,7 @@ class Graphics {
       const scaleX = width / diameter;
       const scaleY = height / diameter;
       const newAutoScale = Math.min(scaleX, scaleY);
-      // this.scale = newAutoScale * this.scale;
+      this.scale = newAutoScale * this.scale;
       this.controller.updateSlider(this.scale);
     }
   }

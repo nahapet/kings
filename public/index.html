@@ -22,39 +22,38 @@
 <meta property="og:url" content="https://kingscup.app">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
-<body>
+<body class="playing">
+<div class="header">
+  <h1>Kings Cup .App</h1>
+  <h2>Multi-player King's Cup Online</h2>
+  <div class="links">
+    <a class="link" id="invite">
+      <span>Game Code:</span>
+      <span>Copied!</span>
+      <span id="gameID"></span>
+      <input id="inviteText" name="inviteText" />
+    </a>
+    <a class="link" id="changeName">Change Name</a>
+    <a class="link" id="joinGame">Join Game</a>
+  </div>
+</div>
 <div id="overlay">
   <div>
-    <div id="header">
-      <h1>King's Cup Online</h1>
-      <h2>Play multi-player King's Cup online with friends!</h2>
-      <h2>Spice up virtual happy hours with this online drinking game.</h2>
-    </div>
     <div id="input">
-      <span id="error">Error. Please enter a valid Game ID to join.</span>
       <div>
-        <span>Enter your name:</span>
-        <input id="name" placeholder="E.g. Silly Goose"></input>
+        <span>Your Name:</span>
+        <input id="inputName" placeholder="E.g. Silly Goose"></input>
       </div>
       <div>
-        <span>(Optional) Enter game ID to join:</span>
-        <input id="code" placeholder="Game to join"></input>
+        <span>Game Code:</span>
+        <input id="inputGameCode" placeholder="Game to join"></input>
       </div>
+      <span class="message">Join your friends by entering their Game Code Above.</span>
     </div>
-    <div id="enter">
-      <span>Create New Game</span>
-      <span id="join">Join Existing Game</span>
-    </div>
+    <div id="enter">Let's Play!</div>
   </div>
 </div>
-<div class="sidebar">
-  <div id="invite" class="bubble">
-    <span id="gameID"></span>
-    <span>Click to copy game link!</span>
-    <span>Copied to clipboard!</span>
-  </div>
-  <div id="players"></div>
-</div>
+<div id="players"></div>
 <div class="zoom">
   <span>Zoom:</span>
   <input type="range" min="-40" max="40" value="0" id="slider"></input>

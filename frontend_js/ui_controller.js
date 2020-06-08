@@ -2,7 +2,7 @@
 
 class UIController {
   constructor() {
-    this.name = null;
+    this.name = this.loadName();
     this.gameID = null;
     this.socket = io();
     this.onScreenCanvas = document.getElementById('canvas');
@@ -16,47 +16,62 @@ class UIController {
     this.currentPlayerIndex = null;
   }
 
+  loadName() {
+    const storage = window.localStorage;
+    if (storage) {
+      return storage.getItem('name');
+    }
+    return null;
+  }
+
   begin() {
     this.graphics = new Graphics(this, this.onScreenCanvas, this.offScreenCanvas, this.onScreenCTX, this.offScreenCTX);
     new MouseHandler(this, this.graphics, this.slider);
-    this.prefillGameID();
-    this.socket.on('reconnect', this.reconnect.bind(this));
+    this.requestNameAndGame();
+    window.addEventListener('hashchange', this.requestNameAndGame.bind(this));
+    this.socket.on('reconnect', this.joinGame.bind(this));
     this.socket.on('card data', this.updateCardsFromScocket.bind(this));
     this.socket.on('single card data', this.updateSingleCardFromScocket.bind(this));
     this.socket.on('register name', this.updateName.bind(this));
     this.socket.on('players', this.updatePlayers.bind(this));
-    this.socket.on('game ID error', this.showError.bind(this));
     this.socket.on('card download', this.downloadCardImage.bind(this));
     this.socket.on('rearrange cards', this.rearrangeCards.bind(this));
   }
 
-  prefillGameID() {
+  requestNameAndGame() {
     const hash = window.location.hash;
+    let newHash = null;
     if (hash.startsWith('#')) {
-      const gameID = hash.substring(1);
-      const code = document.getElementById("code");
-      code.value = gameID;
-      const overlay = document.getElementById("overlay");
-      overlay.className += ' join';
+      newHash = hash.substring(1);
+    }
+    if (this.gameID == null || this.gameID != newHash) {
+      this.gameID = newHash;
+      this.joinGame();
     }
   }
 
-  reconnect() {
-    this.socket.emit(
-      'enter',
-      {name: this.name, gameID: this.gameID, verifyGameID: false}
-    );
+  joinGame() {
+    this.socket.emit('join', {name: this.name, gameID: this.gameID});
   }
 
   updateName(data) {
     const {playerName, gameID} = data;
     this.name = playerName;
     this.gameID = gameID;
-    const body = document.getElementsByTagName("body")[0];
-    body.className = 'playing';
+    console.log('updateName!!', playerName, gameID);
+    const storage = window.localStorage;
+    if (storage) {
+      storage.setItem('name', this.name);
+    }
+
     const gameIDElement = document.getElementById('gameID');
-    gameIDElement.innerHTML = 'Game ID:<span>' + gameID + '</span>';
+    gameIDElement.innerHTML = gameID;
     window.location.hash = '#' + gameID;
+
+    const inputName = document.getElementById('inputName');
+    inputName.value = this.name;
+    const inputGameCode = document.getElementById('inputGameCode');
+    inputGameCode.value = this.gameID;
   }
 
   updatePlayers(data) {
@@ -71,11 +86,19 @@ class UIController {
       const player = this.players[i];
       const playerElem = document.createElement('div');
       playerElem.className = 'bubble';
-      playerElem.innerHTML = player;
-      if (player == this.name) {
-        playerElem.innerHTML += ' (You)';
+      const you = player == this.name;
+      const turn = i == this.currentPlayerIndex;
+
+      if (you && turn) {
+        playerElem.innerHTML += '<span>Your Turn!</span>';
+      } else if (you) {
+        playerElem.innerHTML += '<span>You</span>';
+      } else if (turn) {
+        playerElem.innerHTML += '<span>Their Turn</span>';
       }
-      if (i == this.currentPlayerIndex) {
+      playerElem.innerHTML += player;
+
+      if (turn) {
         playerElem.className += ' current';
       }
       playerContainer.appendChild(playerElem);
@@ -88,14 +111,6 @@ class UIController {
 
   isTurn() {
     return this.players.indexOf(this.name) === this.currentPlayerIndex;
-  }
-
-  submitName(name, gameID, verifyGameID) {
-    gameID = gameID.toUpperCase();
-    if (this.hasName()) {
-      return;
-    }
-    this.socket.emit('enter', {name, gameID, verifyGameID});
   }
 
   updateCardsFromScocket(cardData) {
@@ -127,11 +142,6 @@ class UIController {
     const {from, to} = data;
     const card = this.cards.splice(from, 1)[0];
     this.cards.splice(to, 0, card);
-  }
-
-  showError() {
-    const body = document.getElementsByTagName("body")[0];
-    body.className = 'error';
   }
 
   getCards() {
@@ -180,10 +190,53 @@ class UIController {
   }
 
   copyInvite(inviteButton) {
-    navigator.clipboard.writeText(window.location.href);
+    let shareSuccess = false;
+    if (navigator.share) {
+      navigator.share({
+        title: document.title,
+        text: 'Play King\'s Cup with me!',
+        url: window.location.href
+      }).then(() => shareSuccess = true);
+    }
+
+    if (!shareSuccess) {
+      const input = document.getElementById('inviteText');
+      input.value = 'Play King\'s Cup with me! ' + window.location.href;
+      input.select();
+      document.execCommand('copy');
+    }
+    
     const oldClass = inviteButton.className;
     inviteButton.className += ' copied';
     setTimeout(() => {inviteButton.className = oldClass;}, 1000);
+  }
+
+  openChangeName() {
+    this.openJoinGame();
+  }
+
+  openJoinGame() {
+    const body = document.getElementsByTagName("body")[0];
+    body.className = '';
+  }
+
+  closeOverlay() {
+    const body = document.getElementsByTagName("body")[0];
+    body.className = 'playing';
+  }
+
+  submitForm() {
+    const newName = document.getElementById('inputName').value;
+    const newGameID = document.getElementById('inputGameCode').value;
+
+    if (this.gameID != newGameID) {
+      this.name = newName;
+      this.gameID = newGameID;
+      this.joinGame();
+    } else if (this.name != newName) {
+      this.name = newName;
+      this.socket.emit('change name', newName);
+    }
   }
 }
 
