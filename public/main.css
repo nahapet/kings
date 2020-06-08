@@ -21,6 +21,10 @@ div {
   display: flex;
 }
 
+#canvas {
+  touch-action: none;
+}
+
 #canvas2 {
   position: absolute;
   top: 100%;

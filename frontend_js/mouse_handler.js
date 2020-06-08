@@ -10,6 +10,7 @@ class MouseHandler {
     this.dragX = null;
     this.dragY = null;
     this.inviteButton = null;
+    this.pinchDist = null;
     this.initListeners();
   }
 
@@ -63,6 +64,10 @@ class MouseHandler {
     }
 
     if (event.touches) {
+      if (event.touches.length > 1) {
+        this.pinchStart(event);
+        return;
+      }
       event = event.touches[0];
     }
     this.dragX = event.clientX;
@@ -95,6 +100,10 @@ class MouseHandler {
     }
 
     if (event.touches) {
+      if (event.touches.length > 1) {
+        this.pinchZoom(event);
+        return;
+      }
       event = event.touches[0];
     }
 
@@ -118,6 +127,13 @@ class MouseHandler {
   mouseup(event) {
     if (!this.controller.hasName()) {
       return;
+    }
+
+    if (event.touches) {
+      if (event.touches.length > 1) {
+        this.pinchEnd(event);
+        return;
+      }
     }
 
     this.controller.releaseCard();
@@ -146,11 +162,6 @@ class MouseHandler {
     this.controller.closeOverlay();
   }
 
-  zoomStart(event) {
-    event.stopPropagation();
-    this.isZooming = true;
-  }
-
   submitForm() {
     this.controller.submitForm();
     this.closeOverlay();
@@ -163,6 +174,11 @@ class MouseHandler {
     this.submitForm();
   }
 
+  zoomStart(event) {
+    event.stopPropagation();
+    this.isZooming = true;
+  }
+
   zoom(event) {
     if (!this.isZooming) {
       return;
@@ -173,6 +189,28 @@ class MouseHandler {
 
   zoomEnd(event) {
     this.isZooming = false
+  }
+
+  pinchStart(event) {
+    const dist = Math.hypot(
+      event.touches[0].pageX - event.touches[1].pageX,
+      event.touches[0].pageY - event.touches[1].pageY);
+    this.pinchDist = dist;
+    this.controller.pinchStart();
+  }
+
+  pinchZoom(event) {
+    const dist = Math.hypot(
+      event.touches[0].pageX - event.touches[1].pageX,
+      event.touches[0].pageY - event.touches[1].pageY);
+    if (this.pinchDist != null) {
+      const scale = dist / this.pinchDist;
+      this.controller.setPinchZoom(scale);
+    }
+  }
+
+  pinchEnd(event) {
+    this.pinchDist = null;
   }
 }
 

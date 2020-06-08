@@ -45,6 +45,10 @@ class Graphics {
     window.requestAnimationFrame(this.drawLoop.bind(this));
   }
 
+  getScale() {
+    return this.scale;
+  }
+
   onResize() {
     if (this.scale == null) {
       this.scale = 1.5;

@@ -14,6 +14,7 @@ class UIController {
     this.grabbedCard = null;
     this.players = [];
     this.currentPlayerIndex = null;
+    this.pinchStartScale = null;
   }
 
   loadName() {
@@ -182,6 +183,17 @@ class UIController {
   setZoom(value) {
     const scale = Math.pow(10, value / 100);
     this.graphics.setUserScale(scale);
+  }
+
+  pinchStart() {
+    this.pinchStartScale = this.graphics.getScale();
+  }
+
+  setPinchZoom(value) {
+    if (this.pinchStartScale != null) {
+      const scale = this.pinchStartScale * value;
+      this.graphics.setUserScale(scale);
+    }
   }
 
   updateSlider(scale) {
