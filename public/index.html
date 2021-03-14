@@ -3,6 +3,7 @@
 <html>
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-163589333-1"></script>
+<script src="https://www.googleoptimize.com/optimize.js?id=OPT-5XG5KNF"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -25,11 +26,11 @@
 <body class="playing">
 <div class="header">
   <h1>Kings Cup .App</h1>
-  <h2>Multi-player King's Cup Online</h2>
+  <h2>Multiplayer King's Cup Online</h2>
   <div class="links">
     <a class="link" id="invite">
-      <span>Game Code:</span>
-      <span>Copied!</span>
+      <span>Invite Friends:</span>
+      <span>Link Copied!</span>
       <span id="gameID"></span>
       <input id="inviteText" name="inviteText" />
     </a>
@@ -39,16 +40,22 @@
 </div>
 <div id="overlay">
   <div>
-    <div id="input">
-      <div>
-        <span>Your Name:</span>
-        <input id="inputName" placeholder="E.g. Silly Goose"></input>
+    <div id="overlayContent">
+      <div id="nameAndGameOverlay">
+        <div>
+          <span>Your Name:</span>
+          <input id="inputName" placeholder="E.g. Silly Goose"></input>
+        </div>
+        <div>
+          <span>Game Code:</span>
+          <input id="inputGameCode" placeholder="Game to join"></input>
+        </div>
+        <span class="message">Join an in-progress game by entering the Game Code.</span>
       </div>
-      <div>
-        <span>Game Code:</span>
-        <input id="inputGameCode" placeholder="Game to join"></input>
+      <div id="educationalOverlay">
+        <span class="message">Welcome to <em>King's Cup .App</em>, the online multiplayer card drinking game! Press the <em>Invite Friends</em> button at any point to add people to this game.</span>
+        <span class="message">Playing is easy. Drag a card out of the circle to flip it over, then do the drinking challenge for that card. Don't remember what each card means? Check out the <em>House Rules</em> sticky notes for a refresher.</span>
       </div>
-      <span class="message">Join your friends by entering their Game Code Above.</span>
     </div>
     <div id="enter">Let's Play!</div>
   </div>

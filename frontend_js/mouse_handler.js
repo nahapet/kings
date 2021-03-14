@@ -39,8 +39,8 @@ class MouseHandler {
     const overlay = document.getElementById("overlay");
     overlay.addEventListener("mousedown", this.closeOverlay.bind(this));
 
-    const input = document.getElementById("input");
-    input.addEventListener("mousedown", this.suppressTouch.bind(this));
+    const overlayContent = document.getElementById("overlayContent");
+    overlayContent.addEventListener("mousedown", this.suppressTouch.bind(this));
     document.addEventListener('keyup', this.maybeSubmitForm.bind(this));
 
     const enter = document.getElementById("enter");

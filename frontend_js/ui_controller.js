@@ -15,6 +15,7 @@ class UIController {
     this.players = [];
     this.currentPlayerIndex = null;
     this.pinchStartScale = null;
+    this.registerExperiments();
   }
 
   loadName() {
@@ -39,6 +40,20 @@ class UIController {
     this.socket.on('rearrange cards', this.rearrangeCards.bind(this));
   }
 
+  registerExperiments() {
+    function educationalOverlayExperiment(value) {
+      if (value ==  '0') {
+        // No interstitial, do nothing.
+      } else if (value == '1') {
+        this.showEducationalOverlay();
+      }
+    }
+    gtag('event', 'optimize.callback', {
+      name: 'FmHgyUa6ToaelyKA_VgxXQ',
+      callback: educationalOverlayExperiment.bind(this),
+    });
+  }
+
   requestNameAndGame() {
     const hash = window.location.hash;
     let newHash = null;
@@ -59,7 +74,6 @@ class UIController {
     const {playerName, gameID} = data;
     this.name = playerName;
     this.gameID = gameID;
-    console.log('updateName!!', playerName, gameID);
     const storage = window.localStorage;
     if (storage) {
       storage.setItem('name', this.name);
@@ -217,7 +231,7 @@ class UIController {
       input.select();
       document.execCommand('copy');
     }
-    
+
     const oldClass = inviteButton.className;
     inviteButton.className += ' copied';
     setTimeout(() => {inviteButton.className = oldClass;}, 1000);
@@ -235,6 +249,8 @@ class UIController {
   closeOverlay() {
     const body = document.getElementsByTagName("body")[0];
     body.className = 'playing';
+    const overlay = document.getElementById("overlay");
+    overlay.className = '';
   }
 
   submitForm() {
@@ -249,6 +265,13 @@ class UIController {
       this.name = newName;
       this.socket.emit('change name', newName);
     }
+  }
+
+  showEducationalOverlay() {
+    const body = document.getElementsByTagName("body")[0];
+    body.className = '';
+    const overlay = document.getElementById("overlay");
+    overlay.className = 'educational';
   }
 }
 

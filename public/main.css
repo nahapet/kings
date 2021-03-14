@@ -201,6 +201,18 @@ h2 {
   justify-content: center;
 }
 
+#overlay #educationalOverlay {
+  display: none;
+}
+
+#overlay.educational #nameAndGameOverlay {
+  display: none;
+}
+
+#overlay.educational #educationalOverlay {
+  display: flex;
+}
+
 #overlay > div {
   overflow: hidden;
   width: 500px;
@@ -222,25 +234,27 @@ h2 {
   justify-content: center;
   padding: 20px;
   cursor: pointer;
+  margin-top: 20px;
 }
 
-#input {
+#overlayContent > div {
   margin: 20px 40px;
   flex-direction: column;
 }
 
-#input span {
+#overlayContent span {
   font-size: large;
   padding: 20px;
   padding-left: 0;
 }
 
-#input .message {
+#overlayContent .message {
   font-size: medium;
   margin-top: 20px;
+  padding: 0;
 }
 
-#input input {
+#overlayContent input {
   flex-grow: 1;
   color: #c72f2f;
   font-size: large;
@@ -250,12 +264,8 @@ h2 {
   font-weight: 100;
 }
 
-#input input::placeholder {
+#overlayContent input::placeholder {
   color: #bfbfbf;
-}
-
-#input > div:nth-child(3) {
-  padding-top: 5px;
 }
 
 @media (max-width: 700px) {
