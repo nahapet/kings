@@ -288,6 +288,7 @@ h2 {
   }
 
   #players {
+    background: #7777772b;
     align-items: stretch;
     flex-direction: row;
     top: auto;
