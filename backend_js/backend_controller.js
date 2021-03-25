@@ -30,7 +30,7 @@ class BackendController {
         if (game) {
           gameID = game.getID();
         }
-        console.log(`Game: ${gameID}, player: ${playerName}, message: ${message}`);
+        //console.log(`Game: ${gameID}, player: ${playerName}, message: ${message}`);
       };
 
       const onDisconnect = () => {

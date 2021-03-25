@@ -41,17 +41,10 @@ class UIController {
   }
 
   registerExperiments() {
-    function educationalOverlayExperiment(value) {
-      if (value ==  '0') {
-        // No interstitial, do nothing.
-      } else if (value == '1') {
-        this.showEducationalOverlay();
-      }
+    this.abTesting = new ABTesting();
+    if (this.abTesting.shouldShowOverlay()) {
+      this.showEducationalOverlay();
     }
-    gtag('event', 'optimize.callback', {
-      name: 'FmHgyUa6ToaelyKA_VgxXQ',
-      callback: educationalOverlayExperiment.bind(this),
-    });
   }
 
   requestNameAndGame() {
@@ -168,11 +161,13 @@ class UIController {
   }
 
   grabCard(grabbedCard) {
+    heap.track('Grab Card');
     this.grabbedCard = grabbedCard;
     this.socket.emit('card move', { id: grabbedCard.getID(), x: 0, y: 0});
   }
 
   releaseCard() {
+    heap.track('Release Card');
     if (this.grabbedCard != null) {
       this.socket.emit('card release', { id: this.grabbedCard.getID() });
     }
@@ -216,6 +211,7 @@ class UIController {
   }
 
   copyInvite(inviteButton) {
+    heap.track('Copy Invite');
     let shareSuccess = false;
     if (navigator.share) {
       navigator.share({
