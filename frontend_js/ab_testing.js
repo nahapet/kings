@@ -10,6 +10,7 @@ class ABTesting {
 
   constructor() {
     heap.clearEventProperties();
+    this.exposures = {};
     this.localCache = {}; // back up if no localStorage
   }
 
@@ -37,6 +38,10 @@ class ABTesting {
 
     result = (result == true || result == 'true'); // convert to bool
     heap.addEventProperties({[id]: result});
+    if (!this.exposures[id]) {
+      this.exposures[id] = true;
+      heap.track('Exposure: ' + id);
+    }
     return result;
   }
 
